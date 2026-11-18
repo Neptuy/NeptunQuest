@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NeptunQuest</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0effa;--card:#fff;--tx:#17142b;--mut:#625e82;--ac:#5b3fd6;--acbg:#e9e5ff;--ac2:#2f6bff;--ok:#15803d;--okbg:#e2f6e9;--ko:#b91c1c;--kobg:#fde8e8;--pri:#2f6bff;--bd:#d9d5f0;--term:#0e0c1f;--termtx:#c8d4ff;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0c19;--card:#171629;--tx:#ebe9fa;--mut:#9a96bd;--ac:#a99bff;--acbg:#262150;--ac2:#6ea0ff;--ok:#4ade80;--okbg:#12301f;--ko:#f87171;--kobg:#3a1717;--pri:#6ea0ff;--bd:#2f2c52;--term:#080712;--termtx:#bcd0ff}}
+:root[data-theme="dark"]{--bg:#0d0c19;--card:#171629;--tx:#ebe9fa;--mut:#9a96bd;--ac:#a99bff;--acbg:#262150;--ac2:#6ea0ff;--ok:#4ade80;--okbg:#12301f;--ko:#f87171;--kobg:#3a1717;--pri:#6ea0ff;--bd:#2f2c52;--term:#080712;--termtx:#bcd0ff}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}.logo{flex:none}
+h1{font-size:1.6rem;margin:0;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:28px 0 10px}
+.sub{color:var(--mut);margin:0 0 18px}
+#tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tab{flex:1 1 150px;text-align:left;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:10px 12px;font:inherit;cursor:pointer}
+.tab small{display:block;color:var(--mut)}
+.tab[aria-current="true"]{border-color:var(--ac);background:var(--acbg)}
+.ticket{position:relative;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px 16px 16px 22px;overflow:hidden}.ticket::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(var(--ac),var(--ac2))}.ticket hr{border:0;border-top:2px dashed var(--bd);margin:12px -16px 12px -22px;position:relative;overflow:visible}.ticket hr::before,.ticket hr::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:var(--bg);border:1px solid var(--bd)}.ticket hr::before{left:-9px}.ticket hr::after{right:-9px}
+.ticket .meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--mut);font-size:.9rem}
+.ticket h3{margin:6px 0 8px;font-size:1.25rem}
+.ticket blockquote{margin:0;padding:10px 12px;background:var(--bg);border-radius:6px}
+.bar{display:flex;gap:18px;margin-top:14px;color:var(--mut)}
+.bar b{color:var(--tx);font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+button{font:inherit;color:inherit}
+.act{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;border:1px solid var(--bd);background:var(--card);border-radius:8px;padding:10px 12px;cursor:pointer}
+.act:hover:not(:disabled){border-color:var(--ac)}
+.act span{color:var(--mut);font-size:.85rem;white-space:nowrap}
+.act:disabled{opacity:.5;cursor:default}
+button:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+#log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+#log li{background:var(--term);color:var(--termtx);border-radius:8px;padding:10px 12px;font:.9rem/1.45 "IBM Plex Mono",ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+#log li b{display:block;color:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;font-weight:600;margin-bottom:2px}
+.empty{color:var(--mut);font-style:italic}
+.primary{border:0;background:var(--ac);color:#fff;border-radius:8px;padding:12px 18px;font-weight:600;cursor:pointer;margin-top:18px}
+:root[data-theme="dark"] .primary,:root:not([data-theme="light"]) .primary{color:#0b1220}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .primary{color:#fff}}
+.primary:disabled{opacity:.45;cursor:default}
+.ghost{border:1px solid var(--bd);background:var(--card);border-radius:8px;padding:10px 16px;cursor:pointer}
+#dgp{display:grid;gap:8px;margin-top:12px}
+.dg{text-align:left;border:1px solid var(--bd);background:var(--card);border-radius:8px;padding:10px 12px;cursor:pointer}
+.dg.bad{border-color:var(--ko);background:var(--kobg);cursor:default}
+.dg .why{display:block;color:var(--ko);font-size:.9rem;margin-top:4px}
+#end{margin-top:22px;background:var(--okbg);border:1px solid var(--ok);border-radius:8px;padding:16px}
+#end h2{margin-top:0;color:var(--ok)}
+#end .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+#chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.lb{margin-top:36px}
+#me{margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#me input{font:inherit;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);min-width:0;flex:1 1 160px}
+#me .primary{margin:0}
+#board{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+#board li{display:grid;grid-template-columns:2rem 1fr auto auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 12px}
+#board li.me{border-color:var(--ac);background:var(--acbg)}
+#board .rk{font-weight:700;color:var(--mut)}
+#board .tk{color:var(--mut);font-size:.85rem}
+.term{background:var(--term);color:var(--termtx);border-radius:10px;padding:10px 12px;margin-bottom:10px;font:.9rem/1.45 "IBM Plex Mono",ui-monospace,Consolas,monospace}.term:focus-within{box-shadow:0 0 0 2px var(--ac)}#tout{max-height:220px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}#tout .cm{color:#fff}.tl{display:flex;gap:6px;align-items:center}.tl input{flex:1;min-width:0;background:transparent;border:0;color:#fff;font:inherit;outline:none}
+[hidden]{display:none!important}
+#cl{display:grid;gap:6px;margin-bottom:8px;max-height:260px;overflow:auto}.msg{padding:8px 12px;border-radius:12px;max-width:85%;overflow-wrap:anywhere}.msg.me{background:var(--acbg);justify-self:end}.msg.u{background:var(--card);border:1px solid var(--bd);justify-self:start}.crow{display:flex;gap:8px}.crow input{flex:1;min-width:0;font:inherit;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)}.dg.good{border-color:var(--ok);background:var(--okbg)}
+#ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.chip{border:1px dashed var(--bd);border-radius:10px;padding:8px 10px;opacity:.55}.chip small{display:block;color:var(--mut);font-size:.8rem}.chip.on{opacity:1;border:1px solid var(--ac);background:linear-gradient(var(--acbg),var(--card))}.chip.on b::before{content:"🏅 "}
+#bc{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);margin-bottom:10px}
+#duels{list-style:none;margin:0;padding:0;display:grid;gap:6px}#duels li{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 12px}
+.ov{position:fixed;inset:0;background:rgba(10,8,25,.65);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}.ovc{background:var(--card);border:1px solid var(--bd);border-radius:14px;max-width:520px;max-height:90%;overflow:auto;padding:20px}.ovc ol,#end ol{padding-left:20px}.ovc li{margin-bottom:6px}#end h3{margin:16px 0 6px}#repd{margin:12px 0 0;color:var(--mut)}#repd summary{cursor:pointer}#repd .crow{margin-top:8px}#repd select{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)}
+button,.tab,.act{min-height:44px}input,select,textarea{font-size:16px}#hon{font-size:.95rem}
+.act.good{border-color:var(--ok);background:var(--okbg)}.act.bad{border-color:var(--ko);background:var(--kobg)}#mqf{margin:10px 0}.mqq{white-space:pre-wrap;overflow-wrap:anywhere}
+#toolo{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto;margin-top:8px}#chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.modes{display:flex;gap:10px 14px;flex-wrap:wrap;align-items:center;margin-bottom:16px}.modes label{display:flex;gap:6px;align-items:center}.modes select{font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx)}#genbox{display:flex;gap:8px;flex-wrap:wrap;align-items:center}#cdw{color:var(--ko)}
+.badge{padding:2px 10px;border-radius:99px;font-size:.8rem;font-weight:600}.badge.h{background:var(--kobg);color:var(--ko)}.badge.m{background:var(--acbg);color:var(--ac)}
+.stamp{position:absolute;right:16px;top:14px;border:3px solid var(--ok);color:var(--ok);padding:2px 10px;border-radius:6px;font-weight:700;letter-spacing:.12em;transform:rotate(-10deg);opacity:.92;animation:stampIn .35s ease-out}
+@keyframes stampIn{from{transform:rotate(-10deg) scale(2.4);opacity:0}to{transform:rotate(-10deg) scale(1);opacity:.92}}
+.cf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}.cf i{position:absolute;top:-16px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+#podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:8px 0 14px}.pod{flex:1 1 0;max-width:180px;text-align:center;border:1px solid var(--bd);border-radius:10px 10px 0 0;padding:10px 6px;background:var(--card);overflow-wrap:anywhere}.pod .md{font-size:1.6rem}.pod small{display:block;color:var(--mut)}.pod.me{border-color:var(--ac)}.p1{min-height:130px;background:linear-gradient(var(--acbg),var(--card));border-color:var(--ac)}.p2{min-height:105px}.p3{min-height:85px}.gr{color:var(--mut);font-size:.8rem;margin-left:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand"><svg class="logo" viewBox="0 0 64 64" width="56" height="56" role="img" aria-label="Logo NeptunQuest"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a52f4"/><stop offset="1" stop-color="#2f6bff"/></linearGradient></defs>
+<path d="M10 14H54a4 4 0 0 1 4 4V27a5 5 0 0 0 0 10V46a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V37a5 5 0 0 0 0-10V18a4 4 0 0 1 4-4Z" fill="url(#lg)"/>
+<path d="M24 18V46" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="2 3"/>
+<path d="M11 32l4.5 4.5L21 27.5" fill="none" stroke="#f1eeff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="40" cy="30" r="9" fill="#3a2ba6" stroke="#f1eeff" stroke-width="3"/>
+<path d="M47 37l6 6" stroke="#f1eeff" stroke-width="3.5" stroke-linecap="round"/>
+<text x="40" y="34.5" text-anchor="middle" font-family="IBM Plex Sans,Arial,sans-serif" font-size="13" font-weight="700" fill="#f1eeff">?</text></svg>
+<h1>NeptunQuest</h1></div>
+<nav id="hub" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" aria-label="Jeux"><button class="tab" data-g="tm" aria-current="true">🎫 Ticket mystère</button><button class="tab" data-g="quiz">⚡ Quiz chrono</button><button class="tab" data-g="phish">🎣 Phishing</button><button class="tab" data-g="net">🧮 Sous-réseaux</button><button class="tab" data-g="escape">🔐 Escape game</button></nav>
+<div id="g-tm"><p class="sub"><b>Ticket mystère</b> : un utilisateur te signale un problème. Mène l'enquête avec le moins de temps et d'erreurs possible, puis pose ton diagnostic.</p>
+<div id="chips"></div>
+<div id="tabs"></div>
+<div id="xt" hidden><p class="sub"><b>📥 Tickets importés</b> (scores non comptés au classement)</p><div id="xtl" class="grid" style="margin-bottom:14px"></div></div>
+<div class="modes"><button class="ghost" id="day">📋 Journée de support</button><button class="ghost" id="exam">🎓 Mode examen</button><button class="ghost" id="snd" aria-pressed="true">🔊 Sons</button><button class="ghost" id="rules">❓ Règles</button><button class="ghost" id="daily">📅 Défi du jour</button><label><input type="checkbox" id="urg"> Mode urgence (4 min)</label><span id="genbox"><select id="gc" aria-label="Catégorie"></select><select id="gl" aria-label="Niveau"></select><button class="ghost" id="gen">✨ Ticket généré par Claude</button></span><span id="gmsg" role="status"></span></div>
+<div id="dayq" hidden class="ticket" style="margin-bottom:14px"></div>
+<section class="ticket" id="ticket"></section>
+<div class="bar"><span>Grade : <b id="gr"></b></span><span>Humeur : <b id="mood">😊</b></span><span id="cdw" hidden>⏱ <b id="cd"></b></span><span>Temps passé : <b id="t">0</b> min</span><span>Erreurs : <b id="e">0</b></span></div>
+<div style="margin-top:8px"><button class="ghost" id="dskip" hidden>⏭ Passer ce ticket (0 point)</button> <span id="dclock" role="status"></span></div>
+<div id="livb" role="status" hidden class="ticket" style="margin-top:10px"></div>
+<div id="evb" role="alert" hidden class="ticket" style="margin-top:10px"></div>
+<div id="hon" style="margin:8px 0 0"></div>
+<details id="repd"><summary>🚩 Signaler un problème ou donner son avis sur ce ticket</summary><div class="crow"><select id="rk" aria-label="Type de signalement"><option>Erreur dans le scénario</option><option>Trop facile</option><option>Trop difficile</option><option>Autre</option></select><input id="rt" maxlength="200" placeholder="Précise si tu veux (facultatif)" aria-label="Précision"><button class="ghost" id="rs">Envoyer</button></div><span id="rm" role="status"></span></details>
+<h2>Que fais-tu ? <small style="font-weight:400;color:var(--mut)">Tape une commande ou clique une action</small></h2>
+<div class="term"><div id="tout" role="log"></div><label class="tl"><span>C:\Support&gt;</span><input id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Commande à taper"></label></div>
+<div class="grid" id="acts"></div>
+<div id="tools" hidden><h2>Outils et schéma réseau <small style="font-weight:400;color:var(--mut)">simulés par Claude · 1 min par consultation, 6 maximum</small></h2><div class="modes" id="toolb"></div><div id="chain" role="group" aria-label="Schéma réseau : clique un maillon pour le tester"></div><div id="toolo" class="term" hidden role="status"></div></div>
+<div id="chatbox"><h2>Parler à l'utilisateur <small style="font-weight:400;color:var(--mut)">1 min par question, 6 maximum</small></h2><div id="cl" role="log"></div><div class="crow"><input id="ci" maxlength="200" placeholder="Pose une question à l'utilisateur…" aria-label="Question à l'utilisateur"><button class="ghost" id="cs">Envoyer</button></div></div>
+<h2>Journal d'investigation</h2>
+<ol id="log"></ol>
+<button class="primary" id="dg" disabled>Poser mon diagnostic</button>
+<div id="dgp" hidden></div>
+<section id="end" hidden role="status"></section>
+<section class="lb"><h2>Mon profil</h2><div id="prof"></div></section>
+<section class="lb"><h2>Succès</h2><div id="ach"></div></section>
+<section class="lb"><h2>Classement</h2><select id="bc" aria-label="Type de classement"></select><div id="me"></div><div id="goal"></div><div id="podium"></div><ol id="board"></ol></section>
+<section class="lb" id="prop" hidden><details><summary><b>✍️ Proposer un ticket</b> (relu par le propriétaire avant publication)</summary><p class="sub">Invente une panne réaliste : message de l'utilisateur, au moins 5 actions avec leur résultat, un bon diagnostic et deux faux (avec la raison pour laquelle ils sont faux).</p><div id="pform"></div><p id="pm" role="status"></p></details></section>
+<section class="lb" id="adm" hidden><details><summary><b>🛠 Administration : importer des tickets</b> (réservé au propriétaire de la page)</summary><p class="sub">Colle un tableau JSON de tickets. Exemple d'un ticket : <code>{"k":0,"l":1,"n":"Titre","u":"Prénom N. · Service","p":"Priorité haute","msg":"Message de l'utilisateur","a":[["Action",2,"Résultat"]],"g":["Bon diagnostic"],"b":[["Mauvais diagnostic","Pourquoi c'est faux"]],"x":"Cause","f":"Résolution","c":{"ping 10.0.0.1":0}}</code>. <b>k</b> : catégorie (0 à 7). <b>l</b> : niveau (0 à 2). Minimum 5 actions, 1 ou 2 bons diagnostics (<b>g</b>), au moins 2 mauvais (<b>b</b>). <b>c</b> (facultatif) relie une commande à l'index d'une action, à partir de 0.</p><textarea id="admj" rows="8" style="width:100%;font:.85rem ui-monospace,Consolas,monospace" aria-label="JSON des tickets"></textarea><div class="crow"><button class="ghost" id="admb">Valider et importer</button></div><p id="admm" role="status"></p><ol id="admx"></ol><h3 style="margin:14px 0 6px">Propositions à valider</h3><ol id="admp"></ol></details></section>
+<section class="lb" id="duelsec" hidden><h2>Duels</h2><div class="modes"><button class="ghost" id="dnew">⚔️ Lancer un duel sur le ticket en cours</button><button class="ghost" id="dlive">⚡ Lancer un duel en direct</button><span id="dmsg" role="status"></span></div><ol id="duels"></ol></section>
+</div>
+<div id="g-quiz" hidden></div><div id="g-phish" hidden></div><div id="g-net" hidden></div><div id="g-escape" hidden></div>
+</div>
+<div class="ov" id="tuto" role="dialog" aria-modal="true" aria-labelledby="tt" hidden><div class="ovc"><h2 id="tt" style="margin-top:0">Bienvenue sur NeptunQuest</h2><ol><li>Un <b>ticket</b> arrive : lis le message de l'utilisateur.</li><li><b>Enquête</b> en cliquant des actions ou en tapant des commandes dans le terminal (↑ pour l'historique, Tab pour compléter). Chaque action coûte du temps.</li><li><b>Interroge l'utilisateur</b> dans le chat, quand il est disponible : 1 minute par question.</li><li>Pose ton <b>diagnostic</b> : une erreur coûte 15 points, un indice 10. Certains tickets ont plusieurs causes.</li><li>Score = 100 − 2 × minutes − pénalités, multiplié selon le niveau. Monte en grade, débloque des succès et grimpe au classement.</li></ol><p>Pour t'échauffer, commence par un ticket <b>Débutant</b>.</p><button class="primary" id="tok" style="margin-top:4px">C'est parti</button></div></div>
+<script>
+var T=[
+{n:"Plus d'Internet au poste 14",u:"Sophie M. · Comptabilité",p:"Priorité haute",
+msg:"Bonjour, je n'ai plus Internet depuis ce matin, ni les dossiers partagés. J'ai déjà redémarré mon PC, ça n'a rien changé. C'est urgent, c'est la clôture mensuelle !",
+a:[
+["Regarder l'icône réseau dans la barre des tâches",2,"Icône avec un point d'exclamation jaune : « Aucun accès Internet »."],
+["Lancer ipconfig /all",2,"Adresse IPv4 : 169.254.37.12 (configuration automatique)\nPasserelle : (vide)\nServeur DHCP : (vide)"],
+["Pinger 127.0.0.1",1,"Réponse en <1 ms : la pile TCP/IP du poste fonctionne."],
+["Pinger la passerelle (192.168.1.1)",1,"Délai d'attente de la demande dépassé."],
+["Demander si les collègues voisins ont Internet",1,"« Oui, tout le monde autour de moi travaille normalement. »"],
+["Contrôler le câble réseau et la prise murale",3,"Câble branché côté PC, mais la LED de la carte réseau est éteinte. Côté mur, la prise RJ45 est à moitié sortie."],
+["Réinstaller le pilote de la carte réseau",10,"Pilote réinstallé, redémarrage nécessaire. Toujours aucune connexion."]],
+d:[["Le câble réseau n'est plus branché correctement : pas de lien, donc pas de réponse DHCP",1,""],
+["Le serveur DHCP du site est en panne",0,"Les postes voisins reçoivent bien une adresse : le serveur DHCP fonctionne."],
+["Le pilote de la carte réseau est corrompu",0,"La pile TCP/IP répond et la réinstallation du pilote ne change rien."],
+["Le serveur DNS ne répond plus",0,"Le poste n'a même pas d'adresse valide : on n'en est pas encore au DNS."]],
+x:"L'adresse en 169.254.x.x (APIPA) signifie que le poste n'a reçu aucune réponse DHCP. Comme les voisins fonctionnent, le problème est local, et la LED éteinte pointe vers le câble.",
+f:"Rebrancher le câble à fond, vérifier la LED, lancer ipconfig /renew et confirmer avec l'utilisateur."},
+{n:"L'imprimante du 2e étage ne sort plus rien",u:"Karim B. · Ressources humaines",p:"Priorité moyenne",
+msg:"Mon document est parti à 10h mais rien ne sort de l'imprimante du 2e étage. Elle est allumée, aucun message d'erreur. J'ai relancé l'impression trois fois.",
+a:[
+["Regarder l'écran de l'imprimante",2,"État : Prête. Aucun bourrage, papier et toner OK."],
+["Pinger l'imprimante (192.168.1.40)",1,"Réponse en 2 ms : le réseau jusqu'à l'imprimante est OK."],
+["Imprimer une page de test depuis l'imprimante",2,"La page de test sort sans problème : le matériel fonctionne."],
+["Ouvrir la file d'attente d'impression du poste",2,"Rapport_Q3.docx : « Impression en cours » depuis 10h02, 0 octet envoyé.\n3 autres documents attendent derrière."],
+["Imprimer depuis le poste d'un collègue",3,"Impression réussie. Le souci est propre au poste de Karim."],
+["Redémarrer l'imprimante",3,"Elle redémarre normalement, mais la file du poste reste bloquée."],
+["Réinstaller le pilote d'imprimante",10,"Pilote réinstallé, mais le document bloqué est toujours dans la file."]],
+d:[["Un travail d'impression bloque la file du poste (service Spouleur)",1,""],
+["L'imprimante est en panne matérielle",0,"Elle imprime sa page de test et fonctionne depuis un autre poste."],
+["L'adresse IP de l'imprimante a changé",0,"Le ping sur son adresse répond et un collègue imprime sans souci."],
+["Le pilote d'impression est obsolète",0,"La réinstallation du pilote n'a rien changé au blocage."]],
+x:"L'imprimante et le réseau sont sains, et un autre poste imprime : le blocage est dans la file locale. Un document coincé à 0 octet bloque tous les suivants.",
+f:"Arrêter le service Spouleur d'impression, vider C:\\Windows\\System32\\spool\\PRINTERS, redémarrer le service, puis relancer l'impression."},
+{n:"Compte verrouillé chaque matin",u:"Julie D. · Service commercial",p:"Priorité haute",
+msg:"Je n'arrive plus à ouvrir ma session, ça dit que mon compte est verrouillé. J'ai changé mon mot de passe hier, tout marchait hier soir. Tu m'as déjà débloquée une fois et ça recommence.",
+a:[
+["Demander le message d'erreur exact",1,"« Le compte référencé est actuellement verrouillé et ne peut pas être utilisé pour ouvrir une session. »"],
+["Regarder le compte dans Utilisateurs et ordinateurs Active Directory",2,"Compte activé, mot de passe non expiré.\nVerrouillé : oui. Dernier verrouillage : 07h52."],
+["Vérifier l'heure du poste",1,"Heure correcte, pas de décalage Kerberos."],
+["Chercher les événements 4740 sur le contrôleur de domaine",4,"Événement 4740 : compte verrouillé\nSource du verrouillage : IPHONE-JULIE (Exchange ActiveSync)"],
+["Demander à Julie si elle a d'autres appareils connectés",2,"« Oui, mon téléphone avec la messagerie pro, et une tablette. »"],
+["Réinitialiser son mot de passe",3,"Compte débloqué. Dix minutes plus tard, il se reverrouille."],
+["Vérifier la connexion réseau du poste",2,"Connexion normale, le poste joint bien le contrôleur de domaine."]],
+d:[["Un appareil utilise encore l'ancien mot de passe et verrouille le compte à répétition",1,""],
+["Le mot de passe de Julie a expiré",0,"L'annuaire indique un mot de passe valide. Le compte est verrouillé, pas expiré."],
+["Le contrôleur de domaine est en panne",0,"Le poste le joint et les autres utilisateurs ouvrent leur session normalement."],
+["Le compte a été désactivé par erreur",0,"Le compte est activé : il est verrouillé par des échecs d'authentification répétés."]],
+x:"Un verrouillage qui revient après chaque déblocage vient d'une source qui réessaie en boucle. L'événement 4740 désigne le téléphone, qui a gardé l'ancien mot de passe.",
+f:"Débloquer le compte, mettre à jour le mot de passe sur le téléphone et la tablette, puis surveiller les événements 4740."}
+];
+T.push(
+{n:"L'intranet ne s'ouvre plus",u:"Marc L. · Logistique",p:"Priorité moyenne",
+msg:"Je n'arrive plus à ouvrir l'intranet (intranet.entreprise.local), mais Internet marche très bien. Ça fonctionnait hier.",
+a:[["Ouvrir un site public",1,"Le site s'ouvre normalement."],
+["Pinger l'adresse IP du serveur intranet (192.168.10.20)",1,"Réponse en 1 ms : le serveur est joignable."],
+["Pinger le nom intranet.entreprise.local",1,"La requête Ping n'a pas pu trouver l'hôte intranet.entreprise.local."],
+["Lancer ipconfig /all",2,"Serveur DNS : 8.8.8.8 (configuré manuellement)\nSuffixe DNS : (vide)"],
+["Vider le cache du navigateur",3,"Aucun changement, la page reste inaccessible."]],
+d:[["Le poste utilise un DNS public saisi à la main, qui ne connaît pas les noms internes",1,""],["Le serveur intranet est éteint",0,"Il répond au ping sur son adresse IP."],["Le pare-feu bloque le site",0,"Le serveur répond : le problème est la résolution du nom, pas l'accès."]],
+x:"Internet fonctionne et l'IP du serveur répond, mais pas son nom : c'est de la résolution DNS. Le DNS public 8.8.8.8 ne connaît pas les noms internes.",
+f:"Remettre la carte réseau en DNS automatique (ou sur le DNS du domaine), puis lancer ipconfig /flushdns."},
+{n:"Conflit d'adresse IP",u:"Lucie P. · Accueil",p:"Priorité haute",
+msg:"Windows affiche « Un autre ordinateur utilise la même adresse IP » et ma connexion saute toutes les minutes. Ça a commencé hier.",
+a:[["Lancer ipconfig /all",2,"IPv4 : 192.168.1.40 (configuration manuelle)\nDHCP activé : Non"],
+["Chercher qui répond à cette adresse (arp -a)",2,"192.168.1.40 est aussi associée à l'imprimante du 2e étage."],
+["Redémarrer le poste",4,"Le message revient au bout d'une minute."],
+["Vérifier la plage DHCP",3,"Plage DHCP : .100 à .200. L'adresse .40 est hors plage, réservée aux équipements fixes."],
+["Remplacer le câble réseau",3,"Aucun changement."]],
+d:[["Une IP fixe saisie à la main sur le poste est déjà utilisée par l'imprimante",1,""],["Le serveur DHCP attribue deux fois la même adresse",0,"Le poste est en configuration manuelle : le DHCP n'y est pour rien."],["Le câble réseau est défectueux",0,"Un câble défectueux ne provoque pas de conflit d'adresse."]],
+x:"Le poste est en IP fixe sur .40, et l'imprimante répond sur la même adresse. Deux appareils sur une même adresse se coupent mutuellement.",
+f:"Repasser le poste en adresse automatique (DHCP), garder .40 pour l'imprimante et documenter les adresses fixes."},
+{n:"Le scan vers dossier échoue",u:"Anne R. · Secrétariat",p:"Priorité moyenne",
+msg:"Quand je scanne vers le dossier Scans du serveur, le copieur affiche « Échec de l'envoi » alors que ça marchait vendredi. Les impressions fonctionnent.",
+a:[["Tester le scan vers e-mail",2,"Le scan vers e-mail fonctionne."],
+["Pinger le serveur de fichiers depuis le copieur",2,"Réponse correcte : le serveur est joignable."],
+["Ouvrir le dossier Scans depuis un poste",2,"Le dossier s'ouvre et il est accessible en écriture."],
+["Consulter les journaux du copieur",2,"Erreur d'authentification SMB : mot de passe incorrect pour le compte svc-scan."],
+["Vérifier le compte svc-scan dans l'annuaire",3,"Mot de passe expiré depuis samedi (dernier changement : il y a 90 jours)."]],
+d:[["Le mot de passe du compte de service utilisé par le copieur a expiré",1,""],["Le dossier Scans est saturé",0,"Il est accessible en écriture : l'échec vient de l'authentification."],["Le copieur a perdu sa connexion réseau",0,"Le ping et le scan vers e-mail fonctionnent."]],
+x:"Seul le scan vers dossier échoue, avec une erreur d'authentification : le compte de service svc-scan, utilisé par le copieur, a un mot de passe expiré.",
+f:"Réinitialiser le mot de passe de svc-scan (sans expiration si la politique l'autorise), puis le mettre à jour dans la configuration du copieur."},
+{n:"Accès refusé au dossier Achats",u:"Thomas G. · Achats",p:"Priorité moyenne",
+msg:"Je suis arrivé au service Achats lundi, mais j'ai « Accès refusé » sur le dossier partagé Achats. Mon collègue y accède normalement.",
+a:[["Reproduire l'erreur depuis son poste",2,"« Accès refusé ». Le dossier est bien visible dans l'explorateur."],
+["Tester avec la session d'un collègue des Achats",3,"Le dossier s'ouvre sans problème."],
+["Regarder les permissions du dossier",3,"Modification accordée au groupe GG_Achats. Aucune autorisation individuelle."],
+["Regarder les groupes de Thomas dans l'annuaire",2,"Membre de : GG_Logistique, GG_Tous. Pas de GG_Achats."],
+["Redémarrer le serveur de fichiers",15,"Aucun changement. L'accès est toujours refusé."]],
+d:[["Thomas n'a pas été ajouté au groupe GG_Achats après son changement de service",1,""],["Les permissions du dossier sont cassées",0,"GG_Achats a bien les droits et son collègue y accède."],["Le serveur de fichiers a un problème",0,"Il répond et d'autres utilisateurs accèdent au dossier."]],
+x:"Les droits sont donnés au groupe GG_Achats, dont Thomas ne fait pas partie : il est resté dans son ancien groupe.",
+f:"Ajouter Thomas à GG_Achats (retirer l'ancien groupe si besoin), puis lui demander de fermer et rouvrir sa session pour renouveler son jeton."},
+{n:"PC très lent depuis lundi",u:"Claire F. · Marketing",p:"Priorité moyenne",
+msg:"Mon PC met dix minutes à démarrer et tout rame, même Word. Je n'ai rien installé de mon côté.",
+a:[["Ouvrir le Gestionnaire des tâches",2,"Disque : 100 % en permanence. Processeur : 18 %. Mémoire : 55 %."],
+["Regarder l'espace libre du disque C:",1,"237 Go au total, 1,8 Go libres."],
+["Analyser le contenu du disque",4,"Téléchargements : 94 Go. Temp : 31 Go. Aucun programme inconnu."],
+["Lancer une analyse antivirus",8,"Analyse terminée : aucune menace détectée."],
+["Ajouter de la mémoire vive",20,"Aucun changement notable : la mémoire n'était pas saturée."]],
+d:[["Le disque système est presque plein et sature le poste",1,""],["Le poste est infecté par un malware",0,"L'analyse antivirus ne détecte rien."],["Il manque de mémoire vive",0,"La mémoire est à 55 % seulement."]],
+x:"Disque à 100 % avec 1,8 Go libres sur 237 Go : un disque système presque plein ralentit tout Windows.",
+f:"Faire le ménage (Téléchargements, Temp, Nettoyage de disque), retrouver au moins 15 % d'espace libre et suivre l'espace disque."},
+{n:"Outlook se bloque au démarrage",u:"Paul V. · Direction",p:"Priorité haute",
+msg:"Outlook reste sur « Chargement du profil » puis se ferme tout seul depuis ce matin. Je dois envoyer un contrat avant midi.",
+a:[["Tester la messagerie en webmail",2,"Le webmail fonctionne : la boîte aux lettres est saine."],
+["Lancer Outlook en mode sans échec (outlook /safe)",2,"Outlook s'ouvre normalement, avec tous les mails."],
+["Lister les compléments installés",2,"Complément « PDF Signer » installé hier soir, état : actif."],
+["Recréer le profil Outlook",8,"Profil recréé, mais Outlook se bloque de nouveau au démarrage."],
+["Réparer Office depuis le panneau de configuration",12,"Réparation terminée, le problème persiste."]],
+d:[["Un complément installé récemment fait planter Outlook",1,""],["La boîte aux lettres est corrompue",0,"Le webmail fonctionne et le mode sans échec affiche tous les mails."],["Le profil Outlook est corrompu",0,"Un profil neuf plante de la même façon."]],
+x:"Le mode sans échec désactive les compléments : s'il fonctionne, l'un d'eux est en cause. Celui installé la veille est le suspect.",
+f:"Désactiver ou désinstaller le complément PDF Signer, relancer Outlook normalement et demander une version à jour à l'éditeur."}
+);
+T.push(
+{n:"Wi-Fi d'entreprise refusé",u:"Hugo T. · Direction commerciale",p:"Priorité haute",
+msg:"Mon portable ne se connecte plus au Wi-Fi ENTREPRISE, il me redemande mon mot de passe en boucle. Le Wi-Fi invité fonctionne. Je suis sûr de mon mot de passe.",
+a:[["Tester le Wi-Fi invité depuis le portable",2,"Connexion réussie : la carte Wi-Fi et la radio fonctionnent."],
+["Tester ENTREPRISE avec le téléphone d'un collègue",2,"Connexion réussie sur ENTREPRISE : le point d'accès fonctionne."],
+["Regarder le compte de Hugo dans l'annuaire",2,"Compte activé. Mot de passe expiré depuis ce matin (politique : 90 jours)."],
+["Réinitialiser son mot de passe",3,"Mot de passe changé, mais la connexion échoue toujours : « Certificat introuvable ou invalide »."],
+["Lister les certificats du poste (certutil -store my)",3,"Certificat machine : expiré le 1er du mois. Aucun certificat valide."],
+["Redémarrer le portable",3,"Aucun changement."]],
+d:[["Le mot de passe du compte a expiré",1,""],["Le certificat machine du portable a expiré",1,""],["Le point d'accès Wi-Fi est en panne",0,"Le téléphone d'un collègue se connecte normalement à ENTREPRISE."],["La carte Wi-Fi du portable est défectueuse",0,"Le Wi-Fi invité fonctionne avec la même carte."]],
+x:"Deux causes en cascade : le mot de passe a expiré, et même une fois changé, le certificat machine expiré empêche l'authentification sur le réseau d'entreprise.",
+f:"Réinitialiser le mot de passe, renouveler le certificat machine (gpupdate /force en filaire ou en VPN), puis reconnecter le Wi-Fi."},
+{n:"Nouvelle recrue sans messagerie ni dossiers",u:"Camille N. · Ressources humaines",p:"Priorité moyenne",
+msg:"Léa est arrivée ce matin. Elle ouvre sa session mais n'a ni messagerie ni dossier partagé. Tout était prêt hier, normalement.",
+a:[["Vérifier le compte de Léa dans l'annuaire",2,"Compte activé, mot de passe valide, connexion au domaine OK."],
+["Regarder ses groupes (whoami /groups)",2,"Membre de GG_Tous uniquement. Aucun groupe de son service."],
+["Ouvrir sa boîte aux lettres dans le centre d'administration",3,"Boîte créée, mais « Aucune licence attribuée »."],
+["Tester le webmail avec son compte",2,"Message : « Votre boîte aux lettres n'est pas disponible »."],
+["Pinger le contrôleur de domaine",1,"Réponse en 1 ms."]],
+d:[["Le compte n'a pas été ajouté aux groupes de son service",1,""],["La licence de messagerie n'a pas été attribuée",1,""],["Le compte est désactivé",0,"Le compte est activé et la session s'ouvre."],["Le contrôleur de domaine est en panne",0,"Il répond et la session s'ouvre."]],
+x:"Deux oublis à la création du compte : pas de groupes métier (donc pas de dossiers) et pas de licence (donc pas de messagerie).",
+f:"Ajouter Léa aux groupes de son service, lui attribuer la licence de messagerie, puis lui demander de fermer et rouvrir sa session."}
+);
+function Q(k,l,n,u,p,msg,a,g,b,x,f,c){return {k:k,l:l,n:n,u:u,p:p,msg:msg,a:a,d:g.map(function(v){return [v,1,""]}).concat(b.map(function(v){return [v[0],0,v[1]]})),x:x,f:f,c:c||{}}}
+T.push(
+Q(0,0,"Pas de Wi-Fi sur le portable","Inès A. · Communication","Priorité moyenne","Mon portable ne voit plus aucun réseau Wi-Fi depuis ce matin. Mon téléphone, lui, se connecte sans problème.",
+[["Regarder l'icône réseau dans la barre des tâches",1,"Icône d'avion : « Mode avion activé »."],["Tester le Wi-Fi sur le téléphone de la personne",1,"Le téléphone se connecte au Wi-Fi de l'entreprise normalement."],["Lancer ipconfig /all",2,"Carte Wi-Fi : « Média déconnecté ». Carte Ethernet : non connectée."],["Redémarrer le portable",3,"Après redémarrage, le mode avion est toujours activé."],["Réinstaller le pilote Wi-Fi",8,"Pilote réinstallé, aucun changement : le mode avion bloque toujours la radio."]],
+["Le mode avion est activé sur le portable"],
+[["La borne Wi-Fi est en panne","Le téléphone se connecte sans problème à cette borne."],["Le mot de passe du Wi-Fi a changé","Aucun réseau n'apparaît dans la liste : on n'en est pas à l'authentification."],["Le pilote de la carte Wi-Fi est corrompu","La carte est reconnue et la réinstallation du pilote ne change rien."]],
+"Le portable ne voit aucun réseau et affiche l'icône d'avion : la radio Wi-Fi est coupée par le mode avion, souvent activé par une touche du clavier.",
+"Désactiver le mode avion (touche Fn ou panneau rapide), vérifier la reconnexion et expliquer la touche à l'utilisateur.",
+{"ipconfig /all":2,"ipconfig":2}),
+Q(0,1,"Plusieurs postes sans adresse IP","Direction du 1er étage","Priorité haute","Depuis ce matin, plusieurs collègues du 1er étage ont « Aucun accès Internet », et moi aussi sur mon portable. Les postes déjà allumés hier marchent.",
+[["Lancer ipconfig /all sur un poste touché",2,"IPv4 : 169.254.12.7 (automatique). Serveur DHCP : (vide)."],["Vérifier le câble et le lien réseau",2,"Lien actif, LED allumée : le câble et le port sont bons."],["Regarder l'étendue DHCP sur le serveur",3,"Étendue 192.168.1.100-150 : 51 adresses sur 51 attribuées. Baux de 8 jours."],["Regarder les baux en cours",3,"Beaucoup de baux expirent dans 6 jours, dont 20 appareils Wi-Fi invités et téléphones du personnel."],["Redémarrer le service DHCP",4,"Le service redémarre, mais aucun nouveau poste n'obtient d'adresse."]],
+["L'étendue DHCP est épuisée : plus aucune adresse libre"],
+[["Le câble réseau est défectueux","Le lien est actif et la LED est allumée."],["Le serveur DHCP est arrêté","Le service tourne et attribue des adresses jusqu'à épuisement de l'étendue."],["Le DNS ne répond plus","Les postes n'ont même pas d'adresse IP valide."]],
+"Les postes en 169.254.x.x n'ont reçu aucune réponse DHCP alors que le lien est bon : l'étendue est pleine (51/51), à cause de baux trop longs et d'appareils invités.",
+"Réduire la durée des baux (par exemple 8 heures pour les invités), agrandir l'étendue, supprimer les baux obsolètes et séparer le Wi-Fi invité.",
+{"ipconfig /all":0,"ipconfig":0}),
+Q(0,1,"Internet très lent depuis 14h","Service comptabilité","Priorité haute","Tout est très lent depuis 14h, même la messagerie. Les pages mettent une minute à s'ouvrir. Le réseau interne est normal.",
+[["Faire un test de débit sur un poste",2,"Débit descendant : 3 Mb/s (normalement 300). Remontant : 0,4 Mb/s."],["Pinger le serveur de fichiers interne",1,"Réponse en 1 ms : le réseau interne est sain."],["Redémarrer la box",4,"Aucun changement, le débit reste très faible."],["Consulter le trafic sur le pare-feu",4,"Un poste (192.168.1.77) émet 280 Mb/s vers un service de stockage en ligne depuis 14h02."],["Demander à l'utilisateur de ce poste ce qu'il fait",2,"« Je lance la sauvegarde complète de ma photothèque sur mon cloud perso. »"]],
+["Un poste sature la liaison Internet avec un envoi vers le cloud"],
+[["La liaison de l'opérateur est en panne","Le trafic est visible : la ligne fonctionne, elle est saturée."],["Le réseau interne a un problème","Le ping du serveur interne est à 1 ms."],["La box est défectueuse","Le redémarrage n'a rien changé et le trafic montre un envoi massif."]],
+"Le réseau interne est sain mais le débit Internet est effondré, surtout en remontant : un poste envoie massivement vers un cloud personnel et sature la ligne.",
+"Interrompre l'envoi, rappeler la charte d'usage, et mettre en place une limitation de débit ou un filtrage des stockages personnels."),
+Q(0,0,"Wi-Fi de l'hôtel connecté, mais pas d'Internet","Julien R. · Commercial en déplacement","Priorité moyenne","Je suis à l'hôtel, mon portable dit connecté au Wi-Fi mais rien ne s'ouvre, ni la messagerie, ni le VPN.",
+[["Regarder l'état de la connexion Wi-Fi",1,"Connecté à « Hotel-Guest », « Connexion limitée »."],["Lancer ipconfig /all",2,"IPv4 : 10.20.4.88, passerelle 10.20.4.1, DNS 10.20.4.1 : adresse reçue."],["Ouvrir un site en http://neverssl.com",2,"Une page de l'hôtel demande le numéro de chambre et le nom."],["Tester le VPN d'entreprise",2,"Échec : délai dépassé avant l'ouverture du tunnel."],["Réinitialiser la carte réseau",4,"Après réinitialisation, mêmes symptômes."]],
+["Le portail captif de l'hôtel n'a pas été validé"],
+[["Le VPN d'entreprise est en panne","Aucun accès Internet : le VPN ne peut pas se monter avant de valider le portail."],["La carte Wi-Fi est défectueuse","Une adresse IP est bien obtenue et la page de l'hôtel s'affiche."],["Le DNS de l'hôtel est HS","La page du portail s'ouvre : le DNS répond."]],
+"L'adresse IP est obtenue et la connexion est « limitée » : un portail captif demande une authentification avant de laisser passer Internet, VPN compris.",
+"Ouvrir une page en http, renseigner le numéro de chambre sur le portail, puis relancer le VPN.",
+{"ipconfig /all":1,"ipconfig":1}),
+Q(0,1,"Visio qui saccade au bureau","Élodie F. · Direction","Priorité moyenne","Mes visios saccadent et le son coupe, surtout dans mon bureau. Ça va mieux quand je me rapproche de la salle de pause.",
+[["Faire un test de débit en Wi-Fi",2,"Débit : 8 Mb/s, ping 90 ms avec pertes de paquets."],["Regarder le réseau Wi-Fi utilisé",2,"Connectée à « ENTREPRISE » en 2,4 GHz, signal 1 barre sur 4, canal 6."],["Voir les réseaux alentour",3,"22 réseaux visibles sur le canal 6, la plupart voisins."],["Tester avec un câble Ethernet",4,"Débit 310 Mb/s, ping 2 ms : la visio est fluide."],["Réinstaller Teams",8,"Après réinstallation, les saccades continuent en Wi-Fi."]],
+["Le portable est sur un Wi-Fi 2,4 GHz saturé avec un signal faible"],
+[["La ligne Internet est trop lente","En câble, le même poste atteint 310 Mb/s."],["Teams est mal installé","La réinstallation n'a rien changé et le câble règle tout."],["Le portable est trop ancien","En câble, il fait la visio sans problème."]],
+"En câble tout va bien, en Wi-Fi le signal est faible et la bande 2,4 GHz est saturée par les réseaux voisins : pertes de paquets, donc saccades.",
+"Basculer sur le Wi-Fi 5 GHz, rapprocher ou ajouter une borne, et proposer un câble pour les visios importantes."),
+Q(0,0,"Un site fournisseur est bloqué","Marc D. · Achats","Priorité moyenne","Je n'arrive plus à ouvrir le site de notre fournisseur (catalogue-pieces.fr). Tout le reste fonctionne. Mon collègue a le même message.",
+[["Ouvrir le site depuis le téléphone en 4G",2,"Le site s'ouvre normalement."],["Pinger le site",1,"Le site répond (IP 203.0.113.25)."],["Lire le message d'erreur affiché",1,"Page du pare-feu : « Accès bloqué. Catégorie : Sites compromis »."],["Regarder les journaux du filtrage web",3,"Le domaine a été classé « Sites compromis » ce matin par la base de réputation."],["Vider le cache du navigateur",3,"Même page de blocage."]],
+["Le filtrage web bloque le site après un changement de catégorie"],
+[["Le site du fournisseur est en panne","Il s'ouvre en 4G et répond au ping."],["Le DNS ne résout plus le site","Le ping résout bien le nom du site."],["Le navigateur est corrompu","La page de blocage vient du pare-feu, pas du navigateur."]],
+"Le site fonctionne ailleurs et la page de blocage vient du pare-feu : le filtrage web l'a classé comme compromis et le bloque pour tous.",
+"Vérifier que le site est sain, demander son reclassement ou créer une exception temporaire validée par la sécurité, puis prévenir les utilisateurs."),
+Q(0,1,"Réseau local OK, Internet KO sur un poste","Nadia K. · Logistique","Priorité moyenne","Je vois les dossiers du serveur mais plus Internet, uniquement sur mon poste. Hier un technicien a mis une adresse fixe, je crois.",
+[["Lancer ipconfig /all",2,"IPv4 192.168.1.60 (fixe), masque 255.255.255.0, passerelle 192.168.0.1."],["Pinger le serveur de fichiers (192.168.1.10)",1,"Réponse en 1 ms."],["Pinger la passerelle indiquée (192.168.0.1)",1,"Délai d'attente dépassé."],["Pinger la vraie passerelle (192.168.1.1)",1,"Réponse en 1 ms."],["Tester Internet depuis le poste d'un collègue",1,"Le poste voisin accède à Internet sans problème."]],
+["La passerelle saisie sur le poste est fausse (192.168.0.1 au lieu de 192.168.1.1)"],
+[["Le serveur DHCP est en panne","Le poste est en adresse fixe : il n'utilise pas le DHCP."],["Le DNS est mal configuré","Aucun accès à Internet même par adresse IP : c'est un souci de route."],["La box est en panne","Le poste voisin accède à Internet normalement."]],
+"Le réseau local fonctionne mais la passerelle configurée à la main (192.168.0.1) est hors du sous-réseau : le trafic vers Internet n'a nulle part où aller.",
+"Corriger la passerelle en 192.168.1.1 (ou repasser le poste en DHCP) et tester l'accès à Internet.",
+{"ipconfig /all":0,"ipconfig":0,"ping 192.168.1.10":1,"ping 192.168.0.1":2,"ping 192.168.1.1":3}),
+Q(0,1,"Liaison réseau lente et instable au poste 22","Sarah B. · Comptabilité","Priorité moyenne","Mon poste coupe et reprend toute la journée, les gros fichiers n'avancent pas. Le poste d'à côté va bien.",
+[["Regarder la vitesse du lien Ethernet",2,"Lien négocié à 10 Mb/s en half-duplex (le port du switch est en 1 Gb/s)."],["Lancer ping -n 50 192.168.1.1",2,"Perte de 18 % des paquets, temps de réponse très variables."],["Tester le poste sur la prise du voisin",4,"Sur la prise voisine, le lien passe à 1 Gb/s et les pertes disparaissent."],["Inspecter le câble de brassage",3,"Câble écrasé par un pied de bureau, gaine abîmée à 40 cm de la prise."],["Réinstaller le pilote de la carte réseau",8,"Aucun changement : le lien reste à 10 Mb/s."]],
+["Le câble réseau est endommagé et dégrade le lien"],
+[["Le switch est en panne","Le même switch fonctionne à 1 Gb/s sur la prise voisine."],["Le pilote de la carte réseau est corrompu","La réinstallation n'a rien changé et le poste marche ailleurs."],["La ligne Internet est saturée","Les pertes se produisent jusqu'à la passerelle, en local."]],
+"Le lien est négocié à 10 Mb/s avec des pertes, mais fonctionne bien sur une autre prise : le câble écrasé empêche une bonne négociation.",
+"Remplacer le câble de brassage, vérifier que le lien repasse à 1 Gb/s et dégager le câble du passage.",
+{"ping -n 50 192.168.1.1":1}),
+Q(0,2,"Agence sans accès au siège","Agence de Nantes · Responsable","Priorité haute","Après la coupure de courant de cette nuit, on a Internet mais plus aucun accès aux serveurs du siège.",
+[["Pinger la passerelle de l'agence",1,"Réponse : le routeur de l'agence est joignable."],["Tester Internet depuis l'agence",1,"Les sites externes fonctionnent normalement."],["Pinger le serveur du siège (10.0.0.10)",2,"Délai d'attente dépassé."],["Se connecter au routeur de l'agence",4,"Disponibilité : 14 min. Tunnel VPN : aucun configuré, réglages d'usine."],["Regarder l'onduleur de l'agence",3,"Batterie vide, onduleur en alarme : il n'a pas tenu la coupure."],["Demander la dernière sauvegarde de configuration",3,"Aucune sauvegarde du routeur de l'agence n'existe."]],
+["L'onduleur est vide et n'a pas protégé le routeur de la coupure","La configuration du routeur n'était pas sauvegardée"],
+[["Le pare-feu du siège bloque l'agence","Le tunnel n'existe même plus côté routeur de l'agence."],["La ligne Internet de l'agence est coupée","Les sites externes fonctionnent."]],
+"Deux causes en cascade : l'onduleur vide a laissé le routeur s'éteindre, et comme sa configuration n'était pas sauvegardée, il a redémarré aux réglages d'usine sans tunnel VPN.",
+"Reconfigurer le tunnel VPN, sauvegarder la configuration du routeur, remplacer la batterie de l'onduleur et superviser son état.",
+{"ping 10.0.0.10":2}),
+Q(0,2,"Les postes ne voient plus les serveurs","Astreinte informatique","Priorité haute","Plusieurs postes du 2e étage ont Internet mais plus les serveurs internes, ni les imprimantes. Ça concerne ceux qui ont redémarré ce matin.",
+[["Lancer ipconfig /all sur un poste touché",2,"IPv4 192.168.0.34, passerelle 192.168.0.1. Serveur DHCP : 192.168.0.1."],["Comparer avec un poste non touché",2,"IPv4 192.168.1.58, passerelle 192.168.1.1. Serveur DHCP : 192.168.1.5."],["Regarder les baux du serveur DHCP officiel",3,"Aucun bail attribué aux postes du 2e étage depuis 7h45."],["Chercher l'équipement en 192.168.0.1 (arp -a)",3,"L'adresse correspond à une box Wi-Fi domestique branchée sur la prise 2-14."],["Redémarrer le serveur DHCP officiel",4,"Il fonctionne, mais les postes touchés gardent leur adresse en 192.168.0.x."]],
+["Une box domestique branchée sur le réseau distribue de mauvaises adresses (DHCP pirate)"],
+[["Le serveur DHCP officiel est en panne","Il fonctionne et sert les postes non touchés."],["Les postes ont une IP fixe erronée","Ils ont bien reçu leur adresse d'un serveur DHCP, mais pas le bon."],["Le switch du 2e étage est défectueux","Les postes ont Internet et un lien actif : ils joignent une autre box."]],
+"Les postes touchés reçoivent une adresse en 192.168.0.x d'une box branchée par erreur sur une prise murale : un serveur DHCP pirate répond avant le vrai.",
+"Débrancher la box de la prise 2-14, renouveler les adresses (ipconfig /release puis /renew) et activer la protection DHCP snooping sur les switches.",
+{"ipconfig /all":0,"ipconfig":0,"arp -a":3})
+);
+T.push(
+Q(1,0,"Bourrage fantôme","Pierre G. · Juridique","Priorité moyenne","L'imprimante du couloir affiche « Bourrage papier » mais je ne vois aucune feuille coincée.",
+[["Ouvrir le bac 1 et regarder à l'intérieur",2,"Le bac est plein, aucune feuille coincée."],["Ouvrir la porte arrière",2,"Un morceau de papier déchiré est coincé près des rouleaux."],["Redémarrer l'imprimante",3,"Le message de bourrage revient au démarrage."],["Imprimer une page de test avant nettoyage",2,"La page ne sort pas : « Bourrage zone arrière »."],["Réinstaller le pilote",8,"Aucun changement : le message vient de l'imprimante."]],
+["Un morceau de papier est resté coincé dans le module arrière"],
+[["Le pilote d'impression est corrompu","Le message s'affiche sur l'écran de l'imprimante elle-même."],["Le capteur de papier est HS","Un bout de papier est bien présent dans la zone arrière."],["Le bac 1 est mal fermé","Le bac est plein et correctement en place."]],
+"Le message vient de l'imprimante et un morceau de papier déchiré est resté coincé près des rouleaux, hors de vue.",
+"Retirer le morceau de papier, refermer la porte arrière, relancer une impression de test et rappeler de ne pas forcer sur un bourrage."),
+Q(1,0,"Imprimante « Hors connexion »","Amélie V. · Qualité","Priorité moyenne","Mon imprimante s'affiche « Hors connexion » dans Windows depuis ce matin, alors qu'elle est allumée.",
+[["Regarder le panneau de l'imprimante",1,"État : Prête. Aucune erreur."],["Pinger l'imprimante (192.168.1.45)",1,"Réponse en 2 ms."],["Ouvrir la file d'impression Windows",2,"Menu Imprimante : « Utiliser l'imprimante hors connexion » est coché."],["Imprimer une page de test depuis un autre poste",3,"La page sort : l'imprimante fonctionne."],["Réinstaller le pilote",8,"Toujours « Hors connexion » après réinstallation."]],
+["L'option « Utiliser l'imprimante hors connexion » est cochée sur le poste"],
+[["L'imprimante est éteinte","Elle est prête et répond au ping."],["L'adresse IP de l'imprimante a changé","Le ping sur son adresse répond."],["Le câble réseau est débranché","Le réseau fonctionne : ping et impression depuis un autre poste."]],
+"L'imprimante répond et imprime depuis un autre poste, mais Windows la voit hors connexion : l'option « hors connexion » est cochée localement.",
+"Décocher « Utiliser l'imprimante hors connexion » dans le menu Imprimante, puis relancer les travaux en attente.",
+{"ping 192.168.1.45":1}),
+Q(1,0,"Traits blancs sur les impressions","Olivier S. · Marketing","Priorité moyenne","Toutes mes impressions ont une bande blanche sur le côté, comme si l'encre manquait.",
+[["Imprimer une page de test",2,"La bande blanche apparaît aussi sur la page de test interne."],["Regarder le niveau de toner",1,"Toner noir : 4 % restant. Alerte « Toner bas »."],["Imprimer depuis un autre poste",3,"Même bande blanche : le problème n'est pas lié au poste."],["Secouer la cartouche et réimprimer",3,"La bande est moins visible mais revient."],["Réinstaller le pilote",8,"Aucun changement."]],
+["Le toner est presque vide"],
+[["Le pilote d'impression est défectueux","La page de test interne présente le même défaut."],["Le rouleau de l'imprimante est cassé","Secouer la cartouche améliore le rendu : c'est le toner."],["Le papier est humide","Le toner est à 4 % et la bande apparaît sur la page de test."]],
+"La page de test interne montre le même défaut sur tous les postes, et le toner n'a plus que 4 % : la bande blanche vient du toner presque vide.",
+"Remplacer la cartouche de toner, relancer une page de test et prévoir un stock de toner."),
+Q(1,0,"Mon document sort ailleurs","Thérèse M. · Accueil","Priorité moyenne","J'ai imprimé le planning mais il n'est pas sorti. Quelqu'un du 3e étage m'a dit l'avoir trouvé sur son imprimante.",
+[["Regarder l'imprimante par défaut du poste",2,"Imprimante par défaut : « PRN-3E-ETAGE ». Windows la gère automatiquement."],["Ouvrir la file de l'imprimante de l'accueil",1,"Vide : aucun document en attente."],["Pinger l'imprimante de l'accueil",1,"Réponse en 2 ms."],["Imprimer une page de test sur l'imprimante de l'accueil",2,"La page sort normalement."],["Redémarrer le poste",4,"L'imprimante par défaut reste « PRN-3E-ETAGE »."]],
+["L'imprimante par défaut du poste n'est plus celle de l'accueil"],
+[["L'imprimante de l'accueil est en panne","Elle imprime la page de test normalement."],["Le document est bloqué dans la file","La file de l'accueil est vide."],["Le réseau est coupé","Le ping répond et le document est bien sorti ailleurs."]],
+"Le document est bien parti, mais vers l'imprimante par défaut du 3e étage : Windows gère l'imprimante par défaut automatiquement et a changé.",
+"Désactiver « Laisser Windows gérer mon imprimante par défaut », définir l'imprimante de l'accueil par défaut et réimprimer."),
+Q(1,2,"Erreur 0x0000011b à la connexion à l'imprimante","Laurent P. · Finance","Priorité haute","Depuis la mise à jour de ce matin, je n'arrive plus à me connecter à l'imprimante partagée, erreur 0x0000011b. Les anciens postes marchent.",
+[["Reproduire l'ajout de l'imprimante",3,"Erreur 0x0000011b : « Windows ne peut pas se connecter à l'imprimante »."],["Regarder les mises à jour récentes du poste",3,"Mise à jour de sécurité installée cette nuit (authentification RPC renforcée)."],["Regarder la version du serveur d'impression",3,"Le serveur d'impression n'a pas reçu cette mise à jour depuis 3 mois."],["Tester avec un poste qui n'a pas la mise à jour",3,"Le poste ancien se connecte sans problème."],["Désinstaller la mise à jour du poste",10,"Après désinstallation, la connexion fonctionne mais la faille de sécurité est rouverte."]],
+["Le poste patché exige un durcissement RPC que le serveur d'impression non mis à jour ne gère pas"],
+[["Le serveur d'impression est éteint","Les anciens postes s'y connectent sans problème."],["Le pilote d'impression est absent","L'erreur d'authentification survient avant le pilote."],["Le compte de l'utilisateur est verrouillé","L'utilisateur ouvre sa session normalement."]],
+"Le poste a reçu une mise à jour de sécurité qui renforce l'authentification RPC pour l'impression, alors que le serveur d'impression n'a pas été patché : les anciens postes passent, le nouveau est refusé.",
+"Mettre à jour le serveur d'impression avec le même correctif (plutôt que de désinstaller la mise à jour ou d'affaiblir la sécurité), puis retester la connexion."),
+Q(1,1,"L'imprimante imprimait hier, plus aujourd'hui","Mathieu C. · Technique","Priorité moyenne","L'imprimante du labo n'imprime plus depuis ce matin. Je n'ai rien changé, elle est allumée.",
+[["Pinger l'adresse configurée (192.168.1.45)",1,"Délai d'attente dépassé."],["Regarder l'adresse IP affichée par l'imprimante",2,"L'imprimante affiche l'adresse 192.168.1.67 (obtenue en DHCP)."],["Pinger 192.168.1.67",1,"Réponse en 2 ms."],["Regarder le port de l'imprimante sur le poste",2,"Port TCP/IP configuré sur 192.168.1.45."],["Réinstaller le pilote",8,"Aucun changement, le port est toujours sur l'ancienne adresse."]],
+["L'imprimante a changé d'adresse IP (DHCP) et le port du poste pointe vers l'ancienne"],
+[["L'imprimante est en panne","Elle répond au ping sur sa nouvelle adresse."],["Le pilote est corrompu","La réinstallation n'a rien changé : c'est le port qui est faux."],["Le réseau du labo est coupé","L'imprimante répond au ping sur le réseau."]],
+"L'imprimante répond sur 192.168.1.67 alors que le poste vise 192.168.1.45 : son adresse a changé car elle est en DHCP sans réservation.",
+"Mettre à jour le port avec la nouvelle adresse, puis créer une réservation DHCP (ou une IP fixe) pour que l'adresse ne change plus.",
+{"ping 192.168.1.45":0,"ping 192.168.1.67":2}),
+Q(1,1,"Caractères illisibles à l'impression","Hélène D. · Comptabilité","Priorité moyenne","Mes impressions sortent avec des pages de symboles bizarres, des lignes de signes au lieu du texte.",
+[["Imprimer une page de test depuis l'imprimante",2,"La page de test interne est parfaite."],["Imprimer depuis un autre poste",3,"L'autre poste imprime correctement."],["Regarder le pilote installé sur le poste",2,"Pilote « PCL5 générique » sélectionné pour une imprimante PostScript."],["Regarder l'historique des modifications du pilote",3,"Pilote remplacé hier par une mise à jour automatique."],["Redémarrer l'imprimante",3,"Aucun changement."]],
+["Le pilote installé sur le poste ne correspond pas au langage de l'imprimante"],
+[["Le toner est défectueux","La page de test interne est parfaite."],["Le câble réseau est abîmé","L'autre poste imprime correctement par le même réseau."],["Le fichier est corrompu","Tous les documents du poste sortent illisibles."]],
+"L'imprimante et le réseau sont sains, mais le pilote PCL5 générique envoie un langage que l'imprimante PostScript lit comme du texte.",
+"Installer le pilote adapté au modèle (PostScript ou PCL6 constructeur), supprimer le pilote générique et réimprimer."),
+Q(1,1,"Le scan vers e-mail est refusé","Isabelle R. · Secrétariat","Priorité moyenne","Le scan vers e-mail ne marche plus depuis la semaine dernière : « échec de l'envoi ». Les impressions marchent.",
+[["Consulter les journaux du copieur",2,"Erreur SMTP 550 : « relais refusé pour l'adresse 192.168.1.67 »."],["Tester le scan vers dossier",2,"Le scan vers dossier réseau fonctionne."],["Regarder l'adresse IP du copieur",1,"Le copieur a pris l'adresse 192.168.1.67 (ancienne : 192.168.1.45)."],["Regarder les autorisations du relais SMTP",3,"Seule l'adresse 192.168.1.45 est autorisée à envoyer des e-mails."],["Réinitialiser le mot de passe du compte mail",3,"Aucun changement : le relais refuse sur l'adresse, pas sur le compte."]],
+["La nouvelle adresse IP du copieur n'est pas autorisée sur le relais SMTP"],
+[["Le mot de passe de la messagerie a expiré","L'erreur parle de relais refusé pour une adresse IP, pas d'identifiants."],["Le copieur n'a plus de réseau","Le scan vers dossier fonctionne."],["La boîte du destinataire est pleine","Le serveur refuse avant toute livraison."]],
+"Le copieur a changé d'adresse IP, et le relais SMTP n'autorise l'envoi qu'à l'ancienne adresse : le serveur répond 550, relais refusé.",
+"Autoriser la nouvelle adresse sur le relais (ou mieux, réserver l'adresse du copieur en DHCP) et retester le scan vers e-mail."),
+Q(1,2,"Plus rien ne s'imprime pour tout le service","Chef de service · Comptabilité","Priorité haute","Depuis 9h, personne du service ne peut imprimer. Les travaux restent « En cours » et ça a commencé après un gros envoi de factures.",
+[["Ouvrir la file d'impression sur un poste",2,"Des dizaines de documents bloqués en « Impression en cours »."],["Regarder l'état du service Spouleur sur le serveur d'impression",3,"Service arrêté depuis 8h52."],["Redémarrer le service Spouleur",3,"Le service s'arrête de nouveau après quelques secondes."],["Regarder l'espace disque du serveur d'impression",3,"Disque C: : 0 octet libre. Le dossier SPOOL pèse 38 Go."],["Redémarrer le serveur d'impression",10,"Après redémarrage, le service tombe à nouveau en erreur."]],
+["Le service Spouleur du serveur d'impression est arrêté","Le disque du serveur est plein à cause de la file d'impression"],
+[["Les imprimantes sont en panne","Aucune erreur matérielle : les documents n'arrivent pas jusqu'à elles."],["Le réseau du service est coupé","Les postes envoient bien les travaux au serveur."]],
+"Deux causes enchaînées : un gros envoi a rempli le disque du serveur avec des fichiers spool, ce qui a fait tomber le service Spouleur.",
+"Libérer l'espace (purger le dossier SPOOL), redémarrer le service Spouleur, puis agrandir ou déplacer le dossier de spool et superviser l'espace disque."),
+Q(1,2,"L'imprimante apparaît chez certains seulement","Service RH","Priorité moyenne","Dans le service, la moitié des postes ont l'imprimante du couloir et l'autre moitié non. Rien n'a changé à ma connaissance.",
+[["Regarder les imprimantes d'un poste concerné",2,"Aucune imprimante déployée par l'entreprise."],["Lancer gpresult /r sur ce poste",3,"La stratégie « Imprimantes RH » n'apparaît pas dans les GPO appliquées."],["Regarder l'OU du compte ordinateur",3,"Le poste est dans l'OU « Nouveaux postes », pas dans « RH »."],["Regarder un poste qui fonctionne",2,"Il est dans l'OU « RH » et reçoit la stratégie « Imprimantes RH »."],["Forcer gpupdate /force",3,"Aucun changement : la stratégie ne s'applique pas à cette OU."]],
+["Les postes sont dans la mauvaise OU : la GPO d'imprimantes ne s'applique pas"],
+[["Le serveur d'impression est éteint","Les postes de l'OU RH accèdent à l'imprimante."],["La GPO est supprimée","Elle s'applique bien sur les postes de l'OU RH."],["Le pilote est incompatible","Aucune imprimante n'est même déployée sur ces postes."]],
+"Les postes concernés sont dans l'OU « Nouveaux postes » : la GPO qui déploie l'imprimante est liée à l'OU « RH », donc elle ne s'applique pas.",
+"Déplacer les comptes ordinateurs dans l'OU « RH », lancer gpupdate /force, redémarrer les postes et documenter la procédure d'arrivée d'un poste.",
+{"gpresult /r":1,"gpupdate /force":4})
+);
+T.push(
+Q(2,0,"Mot de passe expiré au retour de congés","Fabrice L. · Production","Priorité moyenne","Je reviens de trois semaines de congés et mon mot de passe est refusé alors que je suis sûr de le connaître.",
+[["Lire le message d'erreur exact",1,"« Votre mot de passe a expiré et doit être modifié »."],["Regarder le compte dans l'annuaire",2,"Compte activé. Mot de passe expiré depuis 8 jours (politique : 90 jours)."],["Vérifier le clavier (majuscules, disposition)",1,"Clavier AZERTY, majuscules désactivées."],["Regarder si le compte est verrouillé",1,"Compte non verrouillé."],["Vérifier l'heure du poste",1,"Heure correcte."]],
+["Le mot de passe a expiré pendant les congés"],
+[["Le compte est verrouillé","L'annuaire indique que le compte n'est pas verrouillé."],["Le compte est désactivé","Le compte est activé."],["Le clavier est mal configuré","Disposition et majuscules sont correctes."]],
+"Le message le dit : le mot de passe a expiré (90 jours) pendant l'absence. Le compte n'est ni verrouillé ni désactivé.",
+"Faire changer le mot de passe à l'écran de connexion (ou le réinitialiser avec changement obligatoire à la prochaine ouverture) et le tester."),
+Q(2,0,"Compte désactivé par erreur","Sandrine B. · Qualité","Priorité haute","Ce matin : « Votre compte a été désactivé. Contactez votre administrateur ». Je suis pourtant toujours dans l'entreprise !",
+[["Regarder le compte dans l'annuaire",2,"Compte désactivé hier à 18h02 par le script de nettoyage mensuel."],["Vérifier le contrat dans la liste du personnel RH",3,"Sandrine B. : en poste, contrat en cours."],["Regarder l'OU du compte",2,"Le compte est dans l'OU « Comptes à désactiver »."],["Regarder le journal du script de nettoyage",3,"Le script désactive chaque mois les comptes de cette OU."],["Réinitialiser le mot de passe",3,"Aucun effet : le compte reste désactivé."]],
+["Le compte a été désactivé par erreur lors du nettoyage mensuel"],
+[["Le mot de passe a expiré","Le message parle de compte désactivé, et réinitialiser le mot de passe ne change rien."],["Le compte est verrouillé","L'annuaire indique « désactivé », pas « verrouillé »."],["Le contrat est terminé","Les RH confirment qu'elle est en poste."]],
+"Le compte a été désactivé par le script de nettoyage car il se trouvait par erreur dans l'OU « Comptes à désactiver ».",
+"Déplacer le compte dans la bonne OU, le réactiver, vérifier ses groupes et corriger la procédure de départ pour éviter l'erreur."),
+Q(2,1,"La relation d'approbation a échoué","Gaël T. · Informatique","Priorité moyenne","Au démarrage de mon portable : « La relation d'approbation entre ce poste de travail et le domaine principal a échoué ».",
+[["Se connecter avec un compte local",3,"La session locale s'ouvre : le poste fonctionne."],["Tester le canal sécurisé (nltest /sc_verify:entreprise.local)",3,"Échec : le canal sécurisé avec le domaine est rompu."],["Pinger le contrôleur de domaine",1,"Réponse en 1 ms."],["Regarder le compte ordinateur dans l'annuaire",3,"Compte activé. Mot de passe machine modifié il y a 4 mois (le poste est resté hors ligne 5 mois)."],["Vérifier l'horloge du poste",1,"Heure correcte."]],
+["Le mot de passe du compte ordinateur est désynchronisé avec l'annuaire"],
+[["Le contrôleur de domaine est en panne","Il répond au ping et d'autres postes se connectent."],["Le compte de l'utilisateur est verrouillé","L'erreur concerne le compte du poste, pas celui de l'utilisateur."],["L'horloge est décalée","L'heure est correcte."]],
+"Le poste est resté hors ligne très longtemps : le mot de passe de son compte ordinateur n'est plus synchronisé avec l'annuaire, donc le canal sécurisé est rompu.",
+"Réinitialiser le canal sécurisé (Reset-ComputerMachinePassword) ou sortir puis rejoindre le domaine, redémarrer et vérifier la connexion.",
+{"nltest /sc_verify:entreprise.local":1,"nltest /sc_verify":1}),
+Q(2,1,"Ouverture de session impossible : écart d'horloge","Paul C. · Commercial","Priorité moyenne","Mon PC portable n'arrive plus à ouvrir ma session, il dit « Le temps entre le client et le serveur est trop différent ».",
+[["Regarder l'heure du portable",1,"Il est 09:12 alors qu'il est 09:48 : 36 minutes de retard."],["Regarder l'état du service d'heure (w32tm /query /status)",3,"Source : horloge locale (CMOS). Dernière synchronisation : il y a 40 jours."],["Tester le compte de l'utilisateur dans l'annuaire",2,"Compte actif, mot de passe valide, non verrouillé."],["Ouvrir une session depuis un autre poste",3,"La session s'ouvre normalement."],["Changer le mot de passe",3,"Aucun changement : l'erreur persiste."]],
+["L'horloge du portable est décalée de plus de 5 minutes, ce qui casse Kerberos"],
+[["Le mot de passe est expiré","Le compte a un mot de passe valide et fonctionne depuis un autre poste."],["Le contrôleur de domaine est en panne","Les autres postes s'authentifient normalement."],["Le compte est verrouillé","L'annuaire indique qu'il ne l'est pas."]],
+"Le portable a 36 minutes de retard : Kerberos tolère 5 minutes d'écart, donc l'authentification est refusée. L'horloge n'a pas été synchronisée depuis 40 jours.",
+"Resynchroniser l'heure avec le domaine (w32tm /resync), vérifier la source d'heure et remplacer la pile CMOS si le décalage revient.",
+{"w32tm /query /status":1}),
+Q(2,1,"Les lecteurs réseau ont disparu","Julien H. · Marketing","Priorité moyenne","Depuis son changement de service, Julien n'a plus ses lecteurs réseau (P:, S:) ni le fond d'écran de l'entreprise.",
+[["Lancer gpresult /r pour l'utilisateur",3,"GPO appliquées : « Default Domain Policy » seulement."],["Regarder l'OU du compte utilisateur",2,"Le compte est dans l'OU « Marketing-Transfert », qui n'a pas de GPO liée."],["Regarder un collègue du même service",2,"Il est dans l'OU « Marketing » et reçoit « Lecteurs réseau » + fond d'écran."],["Forcer gpupdate /force",3,"Aucun changement : les stratégies ne s'appliquent pas à cette OU."],["Reconnecter manuellement le lecteur P:",3,"Le lecteur se monte, donc les droits sont bons."]],
+["Le compte est dans une OU où les GPO de lecteurs réseau ne sont pas liées"],
+[["Le serveur de fichiers est éteint","Le lecteur P: se monte manuellement."],["Les droits sur le dossier sont supprimés","Le montage manuel de P: fonctionne."],["La GPO est corrompue","Elle s'applique correctement au collègue."]],
+"Les droits et le serveur sont bons, mais le compte est dans une OU sans GPO liée : lecteurs réseau et fond d'écran ne sont pas déployés.",
+"Déplacer le compte dans l'OU « Marketing », lancer gpupdate /force, fermer et rouvrir la session et vérifier les lecteurs.",
+{"gpresult /r":0,"gpupdate /force":3}),
+Q(2,1,"Profil temporaire à la connexion","Valérie M. · Comptabilité","Priorité moyenne","Quand j'ouvre ma session, Windows dit « Vous avez été connecté avec un profil temporaire » et mes documents ont disparu.",
+[["Regarder les dossiers dans C:\\Users",2,"Deux dossiers : « valerie » et « valerie.bak »."],["Regarder la clé ProfileList dans le registre",4,"Deux clés pour le même utilisateur, dont une se terminant par .bak."],["Vérifier l'espace disque",1,"Disque C: : 38 % libre, pas de problème d'espace."],["Ouvrir une session depuis un autre poste",3,"Le profil se charge normalement ailleurs."],["Redémarrer le poste",4,"Le profil temporaire s'affiche de nouveau."]],
+["Le profil local est corrompu : la clé de registre .bak est en conflit"],
+[["Le compte est supprimé","Le compte fonctionne depuis un autre poste."],["Le disque est plein","Il reste 38 % d'espace libre."],["Les fichiers sont perdus","Le dossier d'origine existe toujours, en .bak."]],
+"Le profil local est corrompu et Windows a laissé deux clés de registre pour le même utilisateur (une .bak), ce qui le charge en profil temporaire. Les données sont intactes dans le dossier d'origine.",
+"Sauvegarder les données, supprimer la clé sans .bak, retirer le suffixe .bak de l'autre, redémarrer et vérifier le profil."),
+Q(2,1,"Cet ordinateur ne vous est pas autorisé","Anthony R. · Support","Priorité moyenne","Je dépanne un collègue à l'atelier mais sur son PC j'ai : « Vous ne pouvez pas utiliser cette station de travail ».",
+[["Tester l'ouverture de session sur son PC avec mon compte",2,"Même message : « station de travail non autorisée »."],["Regarder le compte d'Anthony dans l'annuaire",3,"Onglet Compte : « Se connecter à » limité à PC-SUPPORT-01 et PC-SUPPORT-02."],["Tester sur PC-SUPPORT-02",2,"L'ouverture de session fonctionne."],["Regarder le compte d'un collègue de l'atelier",2,"Aucune restriction sur sa liste « Se connecter à »."],["Réinitialiser le mot de passe",3,"Aucun changement : le message est un refus de station, pas de mot de passe."]],
+["Le compte est limité à certaines stations de travail dans l'annuaire"],
+[["Le mot de passe est expiré","Le message parle de station non autorisée, et le compte marche sur PC-SUPPORT-02."],["Le compte est verrouillé","Le compte s'ouvre normalement sur ses deux stations."],["Le poste de l'atelier est hors domaine","D'autres collègues s'y connectent sans problème."]],
+"Le compte d'Anthony ne peut se connecter qu'à deux postes précis (liste « Se connecter à »). Le poste de l'atelier n'en fait pas partie.",
+"Ajouter le poste de l'atelier à la liste autorisée (ou retirer la restriction si elle n'est plus utile), puis retester."),
+Q(2,2,"Mot de passe changé non pris en compte à l'agence","Agence de Lyon","Priorité haute","Plusieurs collègues ont changé leur mot de passe hier mais à l'agence seul l'ancien marche encore. Au siège, le nouveau passe.",
+[["Regarder l'événement de changement du mot de passe",3,"Le changement est enregistré sur DC-SIEGE-01 hier à 17h20."],["Vérifier le contrôleur de domaine de l'agence",2,"DC-LYON-01 répond et ouvre les sessions."],["Lancer repadmin /replsummary",4,"DC-LYON-01 : 214 échecs de réplication, dernier succès il y a 3 jours."],["Regarder l'erreur de réplication détaillée",4,"Erreur 1722 : « Le serveur RPC n'est pas disponible » vers DC-SIEGE-01."],["Regarder le tunnel VPN site à site",3,"Le tunnel Lyon–siège est tombé depuis 3 jours (certificat expiré)."]],
+["La réplication AD vers le DC de l'agence est en échec depuis la chute du tunnel VPN"],
+[["Les mots de passe sont corrompus","Le changement est correctement enregistré au siège."],["Le DC de l'agence est éteint","Il répond et ouvre les sessions, avec l'ancienne information."],["Le DNS de l'agence est HS","L'erreur de réplication est une erreur RPC liée au tunnel."]],
+"Le tunnel VPN entre Lyon et le siège est tombé depuis 3 jours : le DC de l'agence ne réplique plus, il valide donc encore les anciens mots de passe.",
+"Renouveler le certificat du tunnel, rétablir le VPN, forcer la réplication (repadmin /syncall) et vérifier avec repadmin /replsummary.",
+{"repadmin /replsummary":2}),
+Q(2,2,"Plus personne ne peut ouvrir de session","Direction générale","Priorité haute","Lundi 8h, personne n'arrive à ouvrir de session sur son PC. Tout a l'air normal côté postes, c'est le week-end qui a changé quelque chose.",
+[["Tester l'ouverture de session sur plusieurs postes",2,"Échec partout : « Aucun serveur d'ouverture de session disponible »."],["Pinger le contrôleur de domaine principal (192.168.1.5)",1,"Pas de réponse : il est arrêté."],["Se rendre à la salle serveur",5,"Le serveur est éteint, l'onduleur a été vidé samedi lors d'une coupure."],["Rallumer le serveur et lancer ipconfig /all sur un poste",4,"Serveur DNS : un seul, 192.168.1.5 (ce même contrôleur)."],["Regarder s'il existe un second contrôleur de domaine",3,"Un second DC existe mais personne ne l'utilise : les postes n'ont pas son DNS."]],
+["Le contrôleur de domaine principal est éteint après la coupure","Les postes n'ont qu'un seul DNS, celui du contrôleur éteint"],
+[["Les comptes utilisateurs sont supprimés","Les comptes sont intacts, c'est l'annuaire qui est injoignable."],["La ligne Internet est coupée","Le problème est l'authentification interne, pas Internet."]],
+"Deux causes en cascade : le DC principal est resté éteint après la coupure, et comme les postes n'ont que son DNS, rien ne bascule sur le second contrôleur.",
+"Rallumer le DC et vérifier la réplication, ajouter le DNS du second DC dans la configuration DHCP, et surveiller l'onduleur.",
+{"ping 192.168.1.5":1,"ipconfig /all":3,"ipconfig":3}),
+Q(2,0,"Connexion bureau à distance refusée","Chloé D. · Support","Priorité moyenne","Je n'arrive pas à me connecter en bureau à distance au serveur d'archives : « Pour vous connecter, vous devez être autorisé ».",
+[["Reproduire la connexion RDP",2,"Message : « La connexion a été refusée car le compte n'est pas autorisé à se connecter à distance »."],["Regarder les groupes de Chloé (whoami /groups)",2,"Pas membre de « Utilisateurs du Bureau à distance » sur le serveur."],["Pinger le serveur d'archives",1,"Réponse en 2 ms."],["Regarder qui peut se connecter en RDP",3,"Le groupe « Utilisateurs du Bureau à distance » contient trois personnes, pas Chloé."],["Vérifier son mot de passe",2,"Le mot de passe est valide, la session de son PC s'ouvre."]],
+["Le compte n'est pas autorisé dans le groupe Utilisateurs du Bureau à distance du serveur"],
+[["Le serveur est éteint","Il répond au ping et trois personnes s'y connectent."],["Le mot de passe est expiré","Son mot de passe est valide et sa session s'ouvre."],["Le pare-feu bloque le port RDP","Le serveur répond et le message est un refus d'autorisation."]],
+"Le serveur est joignable et le mot de passe valide, mais Chloé n'est pas dans le groupe des utilisateurs autorisés en bureau à distance.",
+"Ajouter Chloé au groupe « Utilisateurs du Bureau à distance » du serveur (après validation du responsable) et retester la connexion.",
+{"whoami /groups":1})
+);
+T.push(
+Q(3,0,"Écran noir au démarrage","Romain F. · Atelier","Priorité moyenne","Mon PC s'allume (je vois les voyants) mais l'écran reste noir avec « Aucun signal ».",
+[["Vérifier le câble entre l'écran et l'unité centrale",2,"Câble HDMI bien branché des deux côtés."],["Regarder la source d'entrée de l'écran",2,"L'écran est réglé sur DisplayPort alors que le PC est branché en HDMI."],["Brancher l'écran sur un autre PC",4,"L'écran affiche bien l'image du PC voisin en HDMI."],["Redémarrer le PC",3,"Toujours « Aucun signal »."],["Réinstaller le pilote graphique",8,"Impossible : aucun affichage pour intervenir."]],
+["L'écran est réglé sur la mauvaise source d'entrée"],
+[["La carte graphique est HS","L'écran fonctionne avec un autre PC et le PC démarre avec ses voyants."],["Le câble HDMI est défectueux","Le câble est bien branché et la source choisie est la mauvaise."],["Le PC ne démarre pas","Les voyants s'allument et l'unité fonctionne."]],
+"Le PC démarre et l'écran est valide, mais il écoute DisplayPort alors que le PC envoie en HDMI : « aucun signal ».",
+"Passer la source de l'écran sur HDMI via le bouton Input ou le menu, vérifier l'affichage et noter la source à l'avenir."),
+Q(3,1,"Windows Update bloqué","Nicolas P. · Support","Priorité moyenne","Windows Update reste à 30 % depuis deux jours et le poste redémarre sans installer la mise à jour.",
+[["Regarder l'historique de Windows Update",2,"Erreur 0x80070002 répétée : fichier introuvable."],["Regarder l'espace disque",1,"Disque C: : 42 % libre, aucun problème d'espace."],["Lancer l'utilitaire de résolution des problèmes",4,"Détecte un « composant Windows Update endommagé » mais n'arrive pas à le réparer."],["Regarder le dossier SoftwareDistribution",3,"Dossier de cache avec des fichiers incomplets datant d'il y a 2 jours."],["Redémarrer le poste",4,"Même blocage à 30 % ensuite."]],
+["Le cache de Windows Update (SoftwareDistribution) est corrompu"],
+[["Le disque est plein","Il reste 42 % d'espace libre."],["Le poste est infecté","Aucune alerte de sécurité : l'erreur pointe un fichier de mise à jour manquant."],["Le serveur de mise à jour est en panne","Les autres postes se mettent à jour normalement."]],
+"L'erreur 0x80070002 et les fichiers incomplets dans SoftwareDistribution indiquent un cache de mise à jour corrompu, pas un manque d'espace ni un souci de serveur.",
+"Arrêter les services Windows Update et BITS, renommer SoftwareDistribution, redémarrer les services et relancer la recherche de mises à jour."),
+Q(3,1,"PC lent avec bruit de disque","Colette B. · Archives","Priorité haute","Mon PC est de plus en plus lent et j'entends un clic-clac régulier dans l'unité centrale. J'ai peur de perdre mes fichiers.",
+[["Regarder le Gestionnaire des tâches",2,"Disque : 100 % avec un débit très faible, processeur à 10 %."],["Lire l'état SMART du disque",3,"Alerte SMART : secteurs réalloués en forte hausse, état « Attention »."],["Lancer une analyse antivirus",8,"Aucune menace détectée."],["Regarder l'espace libre",1,"Disque C: : 51 % libre."],["Ajouter de la mémoire vive",20,"Aucun changement notable."]],
+["Le disque dur est en train de lâcher (alerte SMART)"],
+[["Le poste est infecté","L'analyse antivirus ne trouve rien."],["Le disque est plein","Il reste 51 % d'espace libre."],["Il manque de mémoire vive","Le processeur est calme et ajouter de la mémoire ne change rien."]],
+"Disque à 100 % avec un débit minime, un bruit de clic-clac et une alerte SMART : le disque est défaillant, ni plein, ni infecté.",
+"Sauvegarder immédiatement les données, remplacer le disque (de préférence par un SSD), réinstaller ou cloner le système et vérifier la sauvegarde."),
+Q(3,0,"Plus de son","Hélène P. · Accueil","Priorité moyenne","Plus aucun son sur mon PC ce matin, ni la musique, ni la sonnerie de Teams. Hier tout marchait.",
+[["Regarder l'icône de volume",1,"Volume à 60 %, non muet."],["Regarder le périphérique de sortie audio",2,"Sortie sur « Casque Bluetooth » (non connecté) au lieu des haut-parleurs."],["Lancer l'utilitaire de dépannage audio",3,"Aucun problème détecté."],["Réinstaller le pilote audio",8,"Aucun changement."],["Redémarrer le PC",3,"Le son reste sur le casque Bluetooth absent."]],
+["La sortie audio est restée sur un casque Bluetooth non connecté"],
+[["Les haut-parleurs sont cassés","Ils ne sont tout simplement pas sélectionnés comme sortie."],["Le pilote audio est corrompu","La réinstallation n'a rien changé et un périphérique est bien listé."],["Le volume est coupé","Le volume est à 60 % et non muet."]],
+"Le volume est bon mais Windows envoie le son vers un casque Bluetooth qui n'est plus connecté.",
+"Choisir les haut-parleurs comme sortie par défaut, et désactiver ou retirer le casque Bluetooth s'il n'est plus utilisé."),
+Q(3,1,"Clé BitLocker demandée au démarrage","Éric M. · Direction","Priorité haute","Mon portable demande une clé de récupération BitLocker au démarrage alors que je ne l'ai jamais vue. Il est bloqué.",
+[["Regarder l'écran de récupération",2,"Écran BitLocker avec un identifiant de clé de 8 caractères."],["Demander ce qui a changé sur le portable",2,"« Le service informatique a mis à jour le BIOS hier soir. »"],["Chercher la clé dans l'annuaire avec l'identifiant",3,"Clé de récupération retrouvée, enregistrée sur le compte ordinateur."],["Saisir la clé de récupération",2,"Windows démarre normalement."],["Réinstaller Windows",30,"Inutile : un échec ferait perdre les données du disque chiffré."]],
+["La mise à jour du BIOS a changé la configuration mesurée au démarrage et déclenché la récupération BitLocker"],
+[["Le disque est défaillant","Windows démarre normalement une fois la clé saisie."],["Le mot de passe de l'utilisateur est perdu","L'écran demande une clé de récupération, pas un mot de passe."],["Le portable est volé ou piraté","La mise à jour du BIOS explique la demande."]],
+"Une mise à jour du BIOS change la configuration mesurée au démarrage : BitLocker se protège et demande la clé de récupération, sauvegardée dans l'annuaire.",
+"Saisir la clé retrouvée dans l'annuaire, puis suspendre BitLocker avant les prochaines mises à jour du BIOS et vérifier la sauvegarde des clés."),
+Q(3,0,"Teams ne détecte plus le micro","Camille G. · RH","Priorité moyenne","Dans Teams mes collègues ne m'entendent plus du tout, alors que le micro marche dans le réglage Windows.",
+[["Tester le micro dans les paramètres Windows",2,"La barre de niveau réagit quand on parle."],["Regarder les paramètres de Teams",2,"Micro : « Aucun périphérique » sélectionné."],["Regarder la confidentialité du micro Windows",3,"« Autoriser les applications de bureau à accéder au micro » est désactivé."],["Réinstaller Teams",8,"Teams réinstallé, toujours pas de micro."],["Brancher un autre micro",4,"Aucun changement dans Teams."]],
+["L'accès au micro est désactivé pour les applications de bureau dans la confidentialité Windows"],
+[["Le micro est cassé","Il fonctionne dans les paramètres Windows."],["Teams est mal installé","La réinstallation n'a rien changé."],["Le pilote audio est corrompu","Le micro est détecté et fonctionne dans Windows."]],
+"Le micro marche dans Windows mais Teams n'y a pas accès : l'autorisation du micro est coupée pour les applications de bureau.",
+"Activer l'accès au micro pour les applications de bureau dans les paramètres de confidentialité, relancer Teams et refaire un test d'appel."),
+Q(3,1,"Le PC s'éteint tout seul","Bastien O. · Atelier","Priorité moyenne","Mon PC s'éteint brutalement après une dizaine de minutes, surtout quand je lance les logiciels de plan. Il redémarre sans erreur.",
+[["Regarder la température du processeur",3,"Température au repos : 82 °C, pic à 96 °C avant l'arrêt."],["Regarder l'observateur d'événements",3,"Événement Kernel-Power 41 : arrêt inattendu, sans écran bleu."],["Ouvrir le boîtier",4,"Radiateur du processeur couvert de poussière, ventilateur presque bloqué."],["Lancer un test mémoire rapide",5,"Aucune erreur de mémoire."],["Réinstaller Windows",30,"Même arrêt au bout de quelques minutes après réinstallation."]],
+["Le processeur surchauffe à cause d'un refroidissement encrassé"],
+[["La mémoire est défectueuse","Le test mémoire ne détecte aucune erreur."],["Windows est corrompu","La réinstallation n'a rien changé."],["L'alimentation est en panne","Les arrêts surviennent quand la température atteint 96 °C."]],
+"Température à 82 °C au repos, 96 °C avant l'arrêt et radiateur encrassé : la protection thermique coupe le PC, d'où l'événement Kernel-Power sans écran bleu.",
+"Nettoyer le radiateur et le ventilateur (le remplacer s'il est bloqué), refaire la pâte thermique si besoin et surveiller la température."),
+Q(3,2,"Écrans bleus répétés","Karine V. · Comptabilité","Priorité haute","Mon PC plante avec un écran bleu plusieurs fois par jour, parfois avec un message différent, depuis l'ajout de mémoire il y a une semaine.",
+[["Lire le code d'erreur de l'écran bleu",2,"Codes variés : MEMORY_MANAGEMENT, PAGE_FAULT_IN_NONPAGED_AREA."],["Lancer le diagnostic mémoire Windows",8,"Des erreurs sont détectées sur la mémoire."],["Retirer la barrette ajoutée la semaine dernière",5,"Après retrait, aucun écran bleu en une demi-journée."],["Vérifier l'état SMART du disque",3,"Disque en bonne santé."],["Réinstaller le pilote graphique",8,"Les écrans bleus continuent tant que la barrette est présente."]],
+["La barrette de mémoire ajoutée est défectueuse ou incompatible"],
+[["Le disque dur est défaillant","L'état SMART est bon."],["Le pilote graphique est corrompu","La réinstallation n'a rien changé et les plantages cessent sans la barrette."],["Windows est infecté","Les plantages dépendent de la barrette, pas du système."]],
+"Codes d'erreurs variés liés à la mémoire, erreurs au diagnostic mémoire et plantages qui disparaissent sans la nouvelle barrette : elle est défectueuse ou incompatible.",
+"Remplacer la barrette par un module compatible (même fréquence et tension) et refaire un diagnostic mémoire complet."),
+Q(3,2,"Le PC met 15 minutes à démarrer","Gilles T. · Production","Priorité moyenne","Mon PC met un quart d'heure à démarrer et reste lent toute la journée. Il a 6 ans, je ne l'ai jamais changé.",
+[["Regarder les programmes au démarrage",3,"37 programmes lancés au démarrage, dont plusieurs mises à jour et outils inutiles."],["Regarder le type de disque",2,"Disque dur mécanique (HDD) 500 Go, utilisé à 100 % au démarrage."],["Mesurer le temps de démarrage",3,"Démarrage de 14 min, dont 11 min d'activité du disque."],["Lancer une analyse antivirus",8,"Aucune menace détectée."],["Désactiver quelques programmes au démarrage",4,"Le démarrage passe à 9 minutes : amélioré, toujours trop long."]],
+["Trop de programmes se lancent au démarrage","Le poste utilise encore un disque dur mécanique saturé"],
+[["Le poste est infecté par un virus","L'analyse antivirus est propre."],["La mémoire est insuffisante","Le disque est le goulot : 11 minutes d'activité au démarrage."]],
+"Deux causes cumulées : 37 programmes au démarrage et un disque dur mécanique qui sature. En réduire une améliore, mais ne règle pas tout.",
+"Désactiver les programmes inutiles au démarrage et remplacer le disque dur par un SSD en clonant le système."),
+Q(3,1,"Clé USB non reconnue","Marine L. · Communication","Priorité moyenne","Aucune clé USB n'est reconnue sur mon poste : l'explorateur ne l'affiche pas et rien ne se passe. Sur mon portable perso ça marche.",
+[["Brancher la clé sur un autre poste de l'entreprise",2,"Même résultat : la clé n'apparaît pas."],["Brancher une souris USB sur le même port",1,"La souris fonctionne : le port est bon."],["Regarder la gestion des disques",3,"Aucun périphérique de stockage amovible n'apparaît."],["Regarder le gestionnaire de périphériques",3,"Clé détectée mais « accès bloqué par une stratégie »."],["Regarder les stratégies de sécurité du poste",4,"Une GPO « Blocage du stockage amovible » est appliquée à tous les postes depuis lundi."]],
+["Une GPO bloque les périphériques de stockage amovibles"],
+[["Le port USB est défectueux","La souris fonctionne sur le même port."],["La clé USB est morte","Elle fonctionne sur un portable personnel."],["Le pilote USB est corrompu","Le gestionnaire détecte la clé mais signale un blocage par stratégie."]],
+"Le port et la clé sont bons : une stratégie de groupe déployée lundi bloque tous les stockages amovibles sur les postes de l'entreprise.",
+"Expliquer la stratégie de sécurité, proposer une alternative (partage de fichiers) ou demander une exception validée, sans désactiver la GPO sur le poste.")
+);
+T.push(
+Q(4,0,"Plus aucun e-mail n'arrive","Brigitte A. · Secrétariat","Priorité haute","Plus aucun e-mail n'arrive depuis hier et mes expéditeurs reçoivent un message d'erreur.",
+[["Regarder l'espace de la boîte aux lettres",2,"Boîte à 50 Go sur 50 Go : quota atteint."],["Lire l'erreur renvoyée à l'expéditeur",2,"Message : « 552 5.2.2 Boîte pleine »."],["Envoyer un mail test vers cette boîte depuis un autre compte",2,"Retour immédiat : boîte pleine."],["Regarder l'état du service de messagerie",2,"Services opérationnels, aucun incident."],["Redémarrer Outlook",3,"Aucun changement : la boîte reste saturée."]],
+["La boîte aux lettres a atteint son quota"],
+[["Le service de messagerie est en panne","Le tableau d'état indique que tous les services fonctionnent."],["Le compte est désactivé","Le compte est actif : l'erreur parle de boîte pleine."],["Outlook est corrompu","Le refus vient du serveur de messagerie, pas du client."]],
+"Les expéditeurs reçoivent « boîte pleine » (552) et la boîte est à 50 Go sur 50 : le quota est atteint, rien ne peut plus être livré.",
+"Libérer de l'espace (éléments supprimés, grosses pièces jointes, archivage) ou relever temporairement le quota, puis mettre en place un archivage automatique."),
+Q(4,1,"Mes mails partent en indésirables","Antoine L. · Commercial","Priorité moyenne","Plusieurs clients ne reçoivent pas mes mails ou les retrouvent dans leurs spams. Ça a commencé après le changement de fournisseur d'envoi.",
+[["Envoyer un mail test vers une boîte externe de contrôle",3,"Le message arrive en indésirable avec « SPF : fail »."],["Regarder l'enregistrement SPF du domaine",3,"SPF : « v=spf1 include:ancien-fournisseur.com -all » : le nouveau fournisseur n'y figure pas."],["Regarder la signature DKIM",3,"DKIM : signature valide."],["Chercher l'adresse IP d'envoi sur les listes noires",4,"IP d'envoi propre, aucune liste noire."],["Vider le cache d'Outlook",3,"Aucun changement."]],
+["L'enregistrement SPF du domaine n'autorise pas le nouveau fournisseur d'envoi"],
+[["L'adresse IP est sur liste noire","La vérification ne trouve aucune liste noire."],["La signature DKIM est invalide","Elle est valide : seul SPF échoue."],["Outlook est mal configuré","Le message est bien envoyé mais jugé suspect par les contrôles du destinataire."]],
+"Le test échoue sur SPF : le domaine n'autorise que l'ancien fournisseur, donc les mails du nouveau serveur d'envoi sont jugés suspects.",
+"Ajouter le nouveau fournisseur à l'enregistrement SPF, attendre la propagation DNS et refaire des tests (SPF, DKIM, DMARC)."),
+Q(4,1,"Le calendrier partagé ne se met pas à jour","Direction · Assistante","Priorité moyenne","Les rendez-vous créés par la secrétaire n'apparaissent plus dans mon calendrier Outlook depuis hier.",
+[["Ouvrir le calendrier sur le webmail",2,"Les rendez-vous créés hier apparaissent normalement."],["Regarder le mode d'Outlook (en ligne ou hors connexion)",2,"Outlook est en « mode hors connexion » depuis hier."],["Regarder l'état de la connexion à Exchange",3,"Connexion à Exchange : « Déconnecté »."],["Tester la connexion Internet du poste",1,"Internet fonctionne."],["Recréer le profil Outlook",8,"Profil recréé, le calendrier est à jour, mais l'utilisateur perd ses réglages (action lourde pour rien)."]],
+["Outlook est resté en mode hors connexion"],
+[["Le calendrier partagé est supprimé","Les rendez-vous existent dans le webmail."],["Le serveur Exchange est en panne","Le webmail fonctionne et affiche les rendez-vous."],["Les droits de partage ont été retirés","Le webmail affiche bien les rendez-vous de la secrétaire : les droits sont conservés."]],
+"Le webmail est à jour mais Outlook est « Déconnecté » en mode hors connexion : il n'a plus synchronisé les rendez-vous depuis hier.",
+"Désactiver le mode hors connexion (Envoyer/Recevoir puis Travailler en mode hors connexion), forcer la synchronisation et vérifier que les rendez-vous arrivent."),
+Q(4,2,"Impossible de se connecter à Microsoft 365","Rachid K. · Direction financière","Priorité haute","Depuis ce matin, je ne peux plus me connecter à Teams, Outlook, ni au portail Microsoft 365, avec des erreurs différentes selon l'application.",
+[["Regarder le compte dans le centre d'administration",3,"Compte actif. Aucune licence Microsoft 365 attribuée depuis cette nuit."],["Regarder les journaux de connexion",4,"Échecs : « AADSTS50076 : authentification multifacteur requise » puis « licence introuvable »."],["Regarder les méthodes d'authentification",3,"Aucune méthode MFA enregistrée : téléphone supprimé par l'utilisateur il y a 2 jours."],["Regarder la synchronisation des licences",4,"Le groupe de licences a été vidé par une mise à jour de la synchronisation cette nuit."],["Réinitialiser le mot de passe",3,"Aucun effet sur les erreurs."]],
+["La licence Microsoft 365 a été retirée car le groupe de licences a été vidé","Aucune méthode d'authentification multifacteur n'est enregistrée"],
+[["Le mot de passe est expiré","Les journaux montrent des erreurs de licence et de MFA, pas de mot de passe."],["Le service Microsoft 365 est en panne","Le tableau d'état est vert et les autres utilisateurs se connectent."]],
+"Deux causes en cascade : le groupe de licences a été vidé pendant la nuit (plus de licence), et l'utilisateur n'a plus de méthode MFA enregistrée, donc l'authentification échoue même une fois la licence rendue.",
+"Réattribuer la licence (corriger le groupe et la synchronisation), réinitialiser la méthode MFA après vérification d'identité et surveiller les groupes de licences."),
+Q(5,0,"Lien cliqué dans un faux mail de livraison","Valentin R. · Comptabilité","Priorité haute","J'ai cliqué sur un lien dans un mail « livraison colis » puis saisi mon mot de passe sur une page qui ressemblait à celle de l'entreprise. Maintenant j'ai peur.",
+[["Regarder le mail reçu",2,"Expéditeur « livraison@colis-suivi.top », lien vers colis-suivi.top/login."],["Regarder les connexions récentes du compte",3,"Connexion depuis un pays étranger il y a 10 minutes."],["Réinitialiser le mot de passe et fermer les sessions",3,"Mot de passe changé, sessions fermées : la connexion étrangère est coupée."],["Chercher d'autres destinataires du même mail",4,"Le même mail a été reçu par 12 collègues, dont 2 ont cliqué."],["Redémarrer le poste",3,"Aucun effet sur le compte déjà compromis."]],
+["Les identifiants de l'utilisateur ont été volés par un site de phishing"],
+[["Le poste est infecté par un ransomware","Aucun fichier chiffré ni demande de rançon : c'est un vol d'identifiants."],["Le serveur de messagerie est piraté","Le mail vient d'un domaine externe et seul un compte est touché."],["Le mot de passe était trop faible","L'utilisateur l'a lui-même saisi sur un faux site."]],
+"Le mail vient d'un domaine externe, la page de connexion est un faux et une connexion étrangère suit : les identifiants ont été saisis sur un site de phishing.",
+"Réinitialiser mots de passe et sessions des comptes touchés, bloquer le domaine, prévenir les destinataires, activer le MFA et sensibiliser."),
+Q(5,1,"Alerte antivirus après une pièce jointe","Marie-Claire P. · Direction","Priorité haute","Mon antivirus a affiché une alerte « menace détectée » puis mon PC est devenu lent. J'ai juste ouvert un fichier Excel reçu d'un fournisseur.",
+[["Lire le détail de l'alerte antivirus",2,"Macro malveillante détectée dans Facture_OCT.xlsm, mise en quarantaine."],["Regarder les processus actifs",3,"Un processus inconnu « svchost32.exe » consomme 60 % du processeur."],["Isoler le poste du réseau",2,"Poste déconnecté : plus aucun trafic sortant."],["Lancer une analyse complète hors ligne",15,"Un second fichier malveillant est trouvé et supprimé."],["Redémarrer le poste",3,"Le processus inconnu se relance au démarrage."]],
+["Le poste a été infecté par une macro malveillante dans une pièce jointe"],
+[["Le disque est défaillant","La lenteur vient d'un processus inconnu à 60 % de processeur."],["Windows Update est en cours","Le processus actif est un faux svchost32.exe, pas Windows Update."],["L'antivirus a déclenché une fausse alerte","Un processus inconnu est actif et un second fichier malveillant est trouvé."]],
+"Alerte sur une macro puis processus inconnu qui sature le processeur et revient au redémarrage : le poste a été infecté en ouvrant la pièce jointe.",
+"Isoler le poste, le nettoyer ou le réinstaller, changer les mots de passe saisis dessus, prévenir le fournisseur et bloquer les macros venues d'Internet."),
+Q(5,1,"Centaines d'échecs de connexion au VPN","RSSI · Astreinte","Priorité haute","La supervision remonte 400 échecs de connexion en une heure sur le compte de Paul, depuis une seule adresse (185.220.101.5).",
+[["Regarder les journaux de connexion",3,"400 échecs sur « paul », puis 3 autres comptes testés avec le même mot de passe depuis la même adresse."],["Regarder si une connexion a réussi",3,"Aucune connexion réussie."],["Regarder l'origine de l'adresse",2,"Adresse de sortie d'un réseau d'anonymisation, qui cible le portail VPN."],["Vérifier le verrouillage du compte de Paul",2,"Le compte est verrouillé par la politique après 5 échecs."],["Réinitialiser le mot de passe de Paul",3,"Prudent mais sans lien avec une compromission prouvée."]],
+["Une attaque par force brute vise le portail VPN"],
+[["Le compte de Paul est compromis","Aucune connexion n'a réussi et le compte s'est verrouillé."],["Paul a oublié son mot de passe","Plusieurs comptes sont testés depuis la même adresse externe."],["Le portail VPN est en panne","Il répond normalement : ce sont des tentatives extérieures."]],
+"Des centaines d'échecs depuis une seule adresse, sur plusieurs comptes avec le même mot de passe, sans réussite : une attaque par force brute (password spraying) contre le VPN.",
+"Bloquer l'adresse (et la plage si besoin), imposer le MFA sur le VPN, limiter le nombre de tentatives et surveiller les autres comptes ciblés."),
+Q(5,2,"Fichiers chiffrés sur le partage Compta","Direction financière","Priorité haute","Tous les fichiers du partage Compta ont l'extension .locked et un fichier LISEZMOI demande une rançon.",
+[["Regarder les fichiers du partage",2,"Fichiers .locked et un fichier LISEZMOI_RANCON.txt dans chaque dossier."],["Regarder qui a modifié les fichiers (journal d'audit)",4,"Toutes les modifications viennent du compte de Sophie depuis PC-COMPTA-07, à 02h14."],["Isoler le poste PC-COMPTA-07",2,"Poste coupé du réseau : le chiffrement s'arrête."],["Regarder les sauvegardes",4,"La sauvegarde du serveur est un lecteur réseau monté en B: : tous les fichiers de B: sont aussi chiffrés."],["Payer la rançon",1,"Jamais une solution : aucune garantie, et on finance les attaquants."]],
+["Un poste infecté a chiffré les partages auxquels son compte avait accès","La sauvegarde montée en lecteur réseau a été chiffrée elle aussi"],
+[["Le disque du serveur est défaillant","Les fichiers sont chiffrés avec une extension .locked : ce n'est pas une panne."],["Le partage a été supprimé par erreur","Les fichiers existent mais sont chiffrés."]],
+"Deux causes : un poste infecté a chiffré les partages accessibles à son compte, et la sauvegarde montée en lecteur réseau a été chiffrée aussi, donc rien de propre à restaurer facilement.",
+"Isoler et réinstaller le poste, restaurer depuis une sauvegarde hors ligne ou immuable, changer les mots de passe, déclarer l'incident, puis passer à des sauvegardes non montées en lecteur réseau."),
+Q(6,0,"Dossier supprimé par erreur","Corinne V. · Marketing","Priorité moyenne","J'ai supprimé par erreur le dossier Campagne_Q4 du serveur hier après-midi. Pouvez-vous le récupérer ?",
+[["Regarder la corbeille du poste",1,"Corbeille vide : les fichiers d'un partage réseau n'y passent pas."],["Regarder les versions précédentes du dossier partagé",3,"Une version d'hier 12h contient le dossier Campagne_Q4 en entier."],["Regarder la dernière sauvegarde nocturne",4,"Sauvegarde de cette nuit : le dossier est absent (déjà supprimé)."],["Regarder le journal de suppression",3,"Suppression hier à 15h22 par le compte de Corinne."],["Refaire le travail à zéro",30,"Inutile : une version précédente existe."]],
+["Le dossier peut être restauré depuis une version précédente du partage"],
+[["Le dossier est perdu définitivement","Une version précédente d'hier 12h le contient."],["La sauvegarde de cette nuit le contient","Elle date d'après la suppression : le dossier est absent."],["Le dossier est dans la corbeille du poste","Un partage réseau n'envoie pas ses fichiers dans la corbeille."]],
+"La corbeille est vide et la sauvegarde de la nuit est postérieure à la suppression, mais les versions précédentes du partage (volume shadow copy) conservent l'état de 12h.",
+"Restaurer la version précédente du dossier, vérifier son contenu avec l'utilisatrice et rappeler la procédure de restauration."),
+Q(6,1,"Sauvegarde en échec depuis trois nuits","Supervision","Priorité moyenne","Le rapport de sauvegarde est en erreur depuis trois nuits sur le serveur de fichiers.",
+[["Lire l'erreur du journal de sauvegarde",2,"Erreur : « Espace insuffisant sur la destination »."],["Regarder l'espace du NAS de sauvegarde",3,"NAS à 100 % : plus d'espace disponible."],["Regarder le contenu sauvegardé",3,"Le dossier Vidéos (4 To) est inclus depuis 3 semaines."],["Vérifier la connexion réseau vers le NAS",2,"Le NAS répond, débit correct."],["Redémarrer le service de sauvegarde",3,"Le job redémarre et échoue de la même façon."]],
+["Le NAS de sauvegarde est plein, notamment à cause de l'ajout du dossier Vidéos"],
+[["Le réseau vers le NAS est coupé","Le NAS répond avec un bon débit."],["Le service de sauvegarde est planté","Le redémarrage n'a rien changé : l'erreur est un manque d'espace."],["Le serveur de fichiers est en panne","Le job démarre et lit les fichiers, il échoue à l'écriture."]],
+"Erreur d'espace insuffisant, NAS plein et dossier de 4 To ajouté récemment : la destination ne peut plus accueillir les sauvegardes.",
+"Exclure ou archiver le dossier Vidéos, nettoyer les anciennes sauvegardes, augmenter la capacité et ajouter une alerte à 80 %."),
+Q(6,1,"La restauration de la base échoue","DBA · Équipe données","Priorité haute","Je tente de restaurer la base Compta depuis la sauvegarde de lundi, mais l'assistant dit « fichier de sauvegarde corrompu ».",
+[["Vérifier l'intégrité du fichier de sauvegarde",4,"Somme de contrôle invalide : le fichier est tronqué."],["Regarder la taille du fichier",2,"Lundi : 3 Go, alors que les autres jours font 41 Go."],["Regarder le journal de la sauvegarde de lundi",3,"Sauvegarde interrompue à 3 Go : l'espace disque s'est rempli pendant l'écriture."],["Tester la sauvegarde de mardi",4,"Le fichier de mardi fait 41 Go et sa somme de contrôle est valide."],["Réinstaller le serveur de base de données",30,"Inutile : le problème est le fichier de sauvegarde."]],
+["La sauvegarde de lundi est tronquée car l'espace disque s'est rempli pendant l'écriture"],
+[["Le serveur de base de données est corrompu","La sauvegarde de mardi est valide et se lit sans erreur."],["Le mot de passe de restauration est faux","L'erreur concerne l'intégrité du fichier, pas l'authentification."],["Le logiciel de restauration est défectueux","Il lit sans problème la sauvegarde de mardi."]],
+"Le fichier de lundi fait 3 Go au lieu de 41, avec une somme de contrôle invalide : la sauvegarde s'est interrompue quand le disque s'est rempli.",
+"Restaurer depuis la sauvegarde de mardi, corriger l'espace de destination et mettre en place des tests de restauration réguliers."),
+Q(6,2,"Le serveur ne démarre plus et la restauration échoue","Direction · Astreinte","Priorité haute","Le serveur de fichiers ne démarre plus et, pire, on découvre que la restauration ne marche pas.",
+[["Regarder l'état du RAID",3,"RAID 5 dégradé : un disque en panne depuis 5 semaines, un second disque en erreur maintenant."],["Regarder les alertes de supervision",3,"Des alertes « disque défaillant » ont été envoyées à une adresse qui n'existe plus."],["Tester la restauration de la dernière sauvegarde",5,"Échec : le catalogue de sauvegarde est vide depuis 5 semaines."],["Regarder les journaux de sauvegarde",4,"Les sauvegardes échouent silencieusement depuis la première panne de disque."],["Remplacer le second disque",10,"Le RAID ne se reconstruit pas avec deux disques perdus."]],
+["Les alertes de panne de disque n'arrivaient à personne : le premier disque est resté en panne","Les sauvegardes échouaient sans alerte et n'avaient jamais été testées"],
+[["Le contrôleur RAID est défectueux","Ce sont les disques eux-mêmes qui sont en erreur."],["Une cyberattaque a détruit les données","Aucune trace d'intrusion : les pannes sont matérielles."]],
+"Deux causes : les alertes partaient vers une adresse disparue, donc un disque est resté en panne 5 semaines, et les sauvegardes échouaient aussi sans alerte, sans jamais avoir été testées.",
+"Tenter une récupération de données spécialisée, corriger la destination des alertes, tester les restaurations régulièrement et appliquer la règle 3-2-1."),
+Q(7,0,"Le serveur d'applications est très lent","Équipe production","Priorité haute","Le serveur d'applications est très lent et plusieurs programmes refusent d'enregistrer.",
+[["Regarder l'espace disque du serveur",2,"Disque C: : 120 Mo libres sur 200 Go."],["Regarder les plus gros dossiers",4,"Les journaux de l'application font 140 Go et grossissent."],["Regarder la mémoire et le processeur",2,"Processeur 15 %, mémoire 40 % : pas de saturation."],["Redémarrer le serveur",8,"Après redémarrage, le disque reste plein et les erreurs reviennent."],["Ajouter de la mémoire vive",20,"Aucun effet sur les erreurs d'écriture."]],
+["Le disque système est plein à cause de journaux applicatifs jamais purgés"],
+[["Le serveur manque de mémoire","La mémoire est utilisée à 40 % seulement."],["Le processeur est saturé","Le processeur est à 15 %."],["Le réseau est lent","Les erreurs sont des échecs d'écriture sur le disque."]],
+"Disque presque plein (120 Mo libres) rempli par 140 Go de journaux, avec processeur et mémoire peu utilisés : la lenteur et les échecs d'enregistrement viennent du disque.",
+"Archiver ou purger les journaux, configurer leur rotation, agrandir le volume et surveiller l'espace libre."),
+Q(7,1,"L'intranet affiche « connexion non sécurisée »","Tous les services","Priorité haute","Tous les navigateurs affichent « connexion non sécurisée » sur l'intranet depuis ce matin 8h.",
+[["Regarder le détail du certificat dans le navigateur",2,"Certificat expiré hier à 23h59."],["Regarder la date du serveur web",2,"Date et heure correctes."],["Tester le site en http",2,"Fonctionne mais sans chiffrement : à ne pas laisser."],["Regarder le renouvellement automatique",4,"La tâche de renouvellement échoue depuis 3 mois (mot de passe du compte de service expiré)."],["Vider le cache des navigateurs",3,"Aucun effet : le certificat est vraiment expiré."]],
+["Le certificat du serveur a expiré car le renouvellement automatique échouait"],
+[["L'horloge du serveur est fausse","La date et l'heure du serveur sont correctes."],["Le navigateur est mal configuré","Tous les navigateurs de tous les postes affichent l'alerte."],["Le site web est piraté","Le certificat est simplement expiré, sans autre signe d'intrusion."]],
+"Le certificat a expiré hier soir et la tâche de renouvellement automatique échoue depuis 3 mois à cause d'un compte de service dont le mot de passe a expiré.",
+"Renouveler et installer le certificat, réparer la tâche de renouvellement (compte de service) et superviser les dates d'expiration."),
+Q(7,1,"L'application ne redémarre pas après le week-end","Équipe gestion","Priorité haute","Après le redémarrage du week-end, l'application de gestion n'est plus disponible. Le serveur est pourtant allumé.",
+[["Regarder l'état du service de l'application (sc query svc-gestion)",2,"Service « Arrêté », démarrage « Automatique (début différé) »."],["Essayer de démarrer le service (net start svc-gestion)",2,"Erreur 1069 : « Échec d'ouverture de session »."],["Regarder le compte utilisé par le service",3,"Compte svc-gestion : mot de passe expiré depuis samedi."],["Regarder l'observateur d'événements",3,"Événement 7038 : le service ne peut pas démarrer, échec d'authentification."],["Redémarrer le serveur",8,"Le service échoue de la même façon."]],
+["Le mot de passe du compte de service a expiré"],
+[["La base de données est corrompue","L'erreur concerne l'ouverture de session du service."],["Le service est désinstallé","Il est présent, arrêté, avec une erreur d'authentification."],["Le serveur manque de ressources","Le service n'arrive même pas à s'authentifier."]],
+"Le service est arrêté avec l'erreur 1069 et le compte svc-gestion a un mot de passe expiré depuis samedi : le redémarrage a révélé le problème.",
+"Réinitialiser le mot de passe du compte de service (sans expiration si la politique l'autorise), le mettre à jour dans le service, démarrer et vérifier.",
+{"sc query svc-gestion":0,"net start svc-gestion":1}),
+Q(7,2,"Machines virtuelles lentes et arrêts nocturnes","Astreinte infrastructure","Priorité haute","Plusieurs machines virtuelles sont très lentes et deux se sont arrêtées d'elles-mêmes cette nuit.",
+[["Regarder la mémoire de l'hôte",3,"Mémoire allouée : 140 % de la mémoire physique, swap actif."],["Regarder l'espace du datastore",3,"Datastore à 100 % : une VM est en pause par manque d'espace."],["Regarder les snapshots",4,"Un snapshot vieux de 8 mois sur la VM base de données pèse 1,3 To."],["Regarder le processeur de l'hôte",2,"Processeur à 35 % : pas de saturation."],["Redémarrer l'hôte",20,"Perte de service pour toutes les VM et le datastore reste plein."]],
+["La mémoire de l'hôte est sur-allouée et les VM swappent","Un ancien snapshot a rempli le datastore"],
+[["Le processeur de l'hôte est saturé","Il n'est qu'à 35 %."],["Le réseau de l'hôte est coupé","Les symptômes sont la lenteur et des arrêts de VM, avec un datastore plein."]],
+"Deux causes cumulées : l'hôte promet plus de mémoire qu'il n'en a, et un snapshot de 8 mois a rempli le datastore, mettant des VM en pause.",
+"Consolider ou supprimer le snapshot, réduire ou rééquilibrer la mémoire allouée, ajouter de la capacité et créer une alerte datastore à 80 %.")
+);
+var C=["Réseau","Impression","Active Directory","Poste Windows","Messagerie & M365","Sécurité","Sauvegardes","Serveurs"],CAT=[0,1,2,0,0,1,2,3,3,0,2],cat=0,db=null,uid=null,prof=null,BASE=T.length,LV=["Débutant","Confirmé","Expert"],M=[1,1.25,1.5],LVL=[0,0,1,1,1,1,0,0,1,2,1],hints=0,bonus=0,urg=false,daily=false,dkey="",tmr=null,left=0;var CM=[{"ipconfig /all":1,"ipconfig":1,"ping 127.0.0.1":2,"ping localhost":2,"ping 192.168.1.1":3},{"ping 192.168.1.40":1},{"net user julie /domain":1,"w32tm /query /status":2},{"ping 192.168.10.20":1,"ping intranet.entreprise.local":2,"ipconfig /all":3,"ipconfig":3},{"ipconfig /all":0,"ipconfig":0,"arp -a":1},{"net user svc-scan /domain":4},{"whoami /groups":3},{"fsutil volume diskfree c:":1,"wmic logicaldisk get size,freespace,caption":1},{"outlook /safe":1,"outlook.exe /safe":1},{"certutil -store my":4},{"whoami /groups":1}],ab=[],KN=["ipconfig","ping","nslookup","arp","net","whoami","tracert","netstat","gpresult","sfc","chkdsk","getmac","route","fsutil","wmic","w32tm","outlook"];T.forEach(function(t,i){if(CM[i]){t.l=LVL[i];t.c=CM[i]}if(t.k!==undefined)CAT[i]=t.k;var nc={};for(var kk in t.c)nc[normK(kk)]=t.c[kk];t.c=nc});
+var $=function(s){return document.querySelector(s)};
+var cur=0,used,mins,errs,fin;
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+var path=[],usedCmd=false,sampleOk=false;
+function score(){return Math.round(Math.max(0,100-2*mins-15*errs-10*hints+bonus)*M[T[cur].l||0])}
+function stars(s){return s>=80?"★★★":s>=55?"★★☆":"★☆☆"}
+function tabs(){
+  var ch=$("#chips");ch.innerHTML="";
+  C.forEach(function(n,k){
+    var tot=0,dn=0;
+    T.forEach(function(t,i){if(CAT[i]===k){tot++;if(lsGet("tm_best_"+i))dn++}});
+    var b=document.createElement("button");b.className="tab";
+    b.innerHTML="<b>"+n+"</b><small>"+dn+"/"+tot+" résolus</small>";
+    if(k===cat)b.setAttribute("aria-current","true");
+    b.onclick=function(){cat=k;tabs()};
+    ch.appendChild(b);
+  });
+  honor();var lb=pts(localBest());$("#gr").textContent=grade(lb)+" ("+lb+" pts)";
+  $("#tabs").innerHTML="";
+  T.forEach(function(t,i){
+    if(CAT[i]!==cat)return;
+    var b=document.createElement("button");b.className="tab";
+    var bs=lsGet("tm_best_"+i);
+    b.innerHTML="<b>"+t.n+"</b><small>"+LV[t.l||0]+" · "+(bs?"Meilleur : "+bs+" pts "+stars(+bs):"Pas encore résolu")+"</small>";
+    if(i===cur)b.setAttribute("aria-current","true");
+    b.onclick=function(){start(i)};
+    $("#tabs").appendChild(b);
+  });
+}
+function grade(t){return t>=2000?"Architecte":t>=1000?"Admin":t>=300?"Technicien":"Stagiaire"}
+function confetti(){
+  if(!window.matchMedia||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var box=document.createElement("div");box.className="cf";
+  var col=["#7a52f4","#2f6bff","#a99bff","#6ea0ff","#f1eeff"];
+  for(var i=0;i<40;i++){var c=document.createElement("i");c.style.left=Math.random()*100+"%";c.style.background=col[i%5];c.style.animationDuration=(1.4+Math.random()*1.2)+"s";c.style.animationDelay=(Math.random()*.5)+"s";box.appendChild(c)}
+  document.body.appendChild(box);setTimeout(function(){box.remove()},3500);
+}
+function stats(){$("#t").textContent=mins;$("#e").textContent=errs+(hints?" · indices "+hints:"");var mv=Math.max(0,100-4*mins-10*errs-5*hints-3*evN);$("#mood").textContent=mv>=70?"😊":mv>=40?"😐":"😠";checkEv();if(day)dayTick();if(duel&&duel.live&&db)livePush()}
+function start(i,dm){
+  cur=i;if(dm!==2){if(duel&&typeof duel.unsub==="function")duel.unsub();duel=null;$("#livb").hidden=true}if(dm!==3)ex=null;if(dm!==4)day=null;$("#dayq").hidden=true;$("#dskip").hidden=dm!==4;if(dm!==4)$("#dclock").textContent="";if(CAT[i]!==undefined)cat=CAT[i];used={};hints=0;path=[];usedCmd=false;genN=0;toolN=0;$("#toolo").hidden=true;evDone={};evN=0;$("#evb").hidden=true;daily=dm===1;dkey=new Date().toISOString().slice(0,10);urg=$("#urg").checked;bonus=(daily&&!lsGet("tm_daily_"+dkey)?20:0)+(urg?20:0);clearInterval(tmr);$("#cdw").hidden=!urg;if(urg){left=240;clock();tmr=setInterval(function(){left--;clock();if(left<=0)lose()},1000)}$("#end").style.cssText="";mins=0;errs=0;fin=false;
+  var t=T[i];
+  $("#ticket").innerHTML='<div class="meta"><span>Ticket #'+(1040+i)+' <span class="badge '+(/haute/.test(t.p)?'h':'m')+'">'+t.p+'</span> <span class="badge m">'+LV[t.l||0]+'</span>'+(daily?' <span class="badge h">Défi du jour</span>':'')+'</span><span>'+t.u+'</span></div><h3>'+t.n+'</h3><hr><blockquote>'+t.msg+'</blockquote>';
+  var g=$("#acts");g.innerHTML="";ab=[];hist=[];chatN=0;$("#repd").open=false;$("#rm").textContent="";$("#cl").innerHTML="";$("#tout").innerHTML="";tp("Terminal de support. Tape « aide » pour des exemples de commandes.");
+  t.a.forEach(function(a,j){
+    var b=document.createElement("button");b.className="act";
+    b.innerHTML="<div>"+a[0]+"</div><span>"+a[1]+" min</span>";
+    ab[j]=b;b.onclick=function(){act(j,b)};
+    g.appendChild(b);
+  });
+  $("#log").innerHTML='<li class="empty" style="background:none;color:var(--mut);padding:0;font-family:inherit">Aucune action pour l\'instant. Choisis une vérification ci-dessus.</li>';
+  $("#dg").disabled=true;$("#dg").hidden=false;$("#dgp").hidden=true;$("#dgp").innerHTML="";$("#end").hidden=true;
+  stats();tabs();
+}
+function act(j,b){
+  if(fin||used[j])return;
+  used[j]=1;path.push(j);b.disabled=true;
+  var a=T[cur].a[j];mins+=a[1];
+  var log=$("#log");
+  if(log.querySelector(".empty"))log.innerHTML="";
+  var li=document.createElement("li");
+  li.innerHTML="<b>"+a[0]+"</b>"+a[2].replace(/\n/g,"<br>");
+  log.appendChild(li);
+  li.scrollIntoView({block:"nearest",behavior:"smooth"});
+  $("#dg").disabled=false;stats();
+}
+$("#dg").onclick=function(){
+  if(fin)return;
+  var p=$("#dgp");p.hidden=false;p.innerHTML="";var nd=T[cur].d.filter(function(x){return x[1]}).length;if(nd>1){var nt=document.createElement("p");nt.textContent="Pannes en cascade : "+nd+" causes à trouver. Sélectionne-les toutes.";p.appendChild(nt)}
+  var order=T[cur].d.map(function(d,i){return i}).sort(function(){return Math.random()-.5});
+  order.forEach(function(i){
+    var d=T[cur].d[i];
+    var b=document.createElement("button");b.className="dg";b.textContent=d[0];
+    b._d=d;b.onclick=function(){pick(d,b)};
+    p.appendChild(b);
+  });
+  var h=document.createElement("button");h.className="ghost";h.textContent="Indice (−10 pts) : écarter une mauvaise réponse";
+  h.onclick=function(){
+    var c=[].slice.call(p.querySelectorAll(".dg")).filter(function(x){return !x.classList.contains("bad")&&!x._d[1]});
+    if(fin||c.length<2)return;
+    c[0].classList.add("bad");var w=document.createElement("span");w.className="why";w.textContent="Écartée grâce à l'indice.";c[0].appendChild(w);
+    hints++;stats();
+  };
+  if(!ex)p.appendChild(h);
+};
+function pick(d,b){
+  if(fin||b.classList.contains("bad"))return;
+  if(d[1]){if(b.classList.contains("good"))return;b.classList.add("good");if($("#dgp").querySelectorAll(".good").length>=T[cur].d.filter(function(x){return x[1]}).length)win();return}
+  errs++;stats();
+  b.classList.add("bad");
+  beep(180,.25,"square");var s=document.createElement("span");s.className="why";s.textContent="Raté (+1 erreur). "+d[2];
+  b.appendChild(s);
+}
+function win(){
+  fin=true;clearInterval(tmr);jingle();
+  var s=score(),k="tm_best_"+cur,old=+lsGet(k)||0;
+  if(ex)ex.sc.push(s);if(day){day.used+=mins;day.done[cur]=1;day.sc[cur]=Math.round(s*dayW(cur))}var nw=[];if(cur<BASE){if(s>old)lsSet(k,s);if(daily){lsSet("tm_daily_"+dkey,1);streakUp()}statsAdd();questAdd(s);weakUp(s);var wu=weekUp(s);nw=checkAch();sync(nw.length||wu)}
+  if(duel&&db)duelDone(s);
+  var t=T[cur],e=$("#end");
+  e.hidden=false;$("#dgp").hidden=true;$("#dg").hidden=true;
+  e.innerHTML='<h2>Ticket résolu : '+s+' pts '+stars(s)+'</h2><p><b>Cause :</b> '+t.x+'</p><p><b>Résolution :</b> '+t.f+'</p><p>Temps : '+mins+' min · Erreurs : '+errs+(s>old&&old?' · Nouveau record !':'')+'</p><div class="row"><button class="ghost" id="again">Rejouer ce ticket</button><button class="primary" id="next" style="margin:0">Ticket suivant</button></div>';
+  $("#again").onclick=function(){start(cur)};
+  $("#next").onclick=function(){start(cur>=BASE?0:(cur+1)%BASE);window.scrollTo({top:0,behavior:"smooth"})};
+  if(ex){$("#again").hidden=true;$("#next").textContent=ex.sc.length<5?"Ticket suivant ("+(ex.sc.length+1)+"/5)":"Voir mon résultat";$("#next").onclick=examNext}
+  if(day){$("#again").hidden=true;$("#next").textContent=day.ids.some(function(i){return !day.done[i]})&&day.used<day.budget?"Retour à la file":"Voir le bilan";$("#next").onclick=dayQueue}
+  var st=document.createElement("div");st.className="stamp";st.textContent="RÉSOLU";$("#ticket").appendChild(st);confetti();
+  if(nw.length)e.insertAdjacentHTML("beforeend","<p>🏅 Succès débloqué : <b>"+nw.map(function(k){return ACH.filter(function(x){return x[0]===k})[0][1]}).join(", ")+"</b></p>");renderAch();
+  if(duel)e.insertAdjacentHTML("beforeend","<p>⚔️ Ton score est envoyé au duel.</p>");
+  debrief(e);
+  tabs();
+  e.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+function tp(txt,cls){var d=document.createElement("div");if(cls)d.className=cls;d.textContent=txt;var o=$("#tout");o.appendChild(d);o.scrollTop=o.scrollHeight}
+function runCmd(raw){
+  var k=normK(raw);
+  if(!k||fin)return;
+  tp("C:\\Support>"+raw.trim(),"cm");
+  if(k==="cls"){$("#tout").innerHTML="";return}
+  if(k==="aide"||k==="help"){tp("Exemples : ipconfig /all, ping <adresse>, arp -a, net user <nom> /domain, whoami /groups, hostname, cls.\nTape les commandes que tu ferais en vrai : chaque commande utile prend du temps.");return}
+  if(k==="hostname"){tp("PC-SUPPORT");return}
+  if(k==="whoami"){tp("entreprise\\support");return}
+  var j=T[cur].c&&T[cur].c[k];
+  if(j!==undefined&&ab[j]){
+    if(used[j]){tp("(déjà exécutée : voir le journal d'investigation)");return}
+    tp(T[cur].a[j][2]);usedCmd=true;cmdSave(k);act(j,ab[j]);return;
+  }
+  var w=k.split(" ")[0];
+  if(KN.indexOf(w)<0){tp("'"+w+"' n'est pas reconnu en tant que commande interne ou externe.");return}
+  mins+=1;stats();
+  var nf="Aucune information utile pour ce ticket. (+1 min)";
+  if(sampleOk&&!ex&&genN<5){genN++;tp("…");var ph=$("#tout").lastChild;genOut(k).then(function(o){ph.textContent=(o||nf)+(o?"\n(sortie simulée, +1 min)":"")}).catch(function(){ph.textContent=nf})}else tp(nf);
+}
+var hist=[],chatN=0;
+function cmsg(t,c){var d=document.createElement("div");d.className="msg "+c;d.textContent=t;var o=$("#cl");o.appendChild(d);o.scrollTop=o.scrollHeight}
+async function ask(){
+  var i=$("#ci"),q=i.value.trim();
+  if(!q||fin||$("#cs").disabled)return;if(ex){cmsg("Pas de chat pendant l'examen.","u");return}
+  var sm=window.claude?await claude.use("sample"):null;
+  if(!sm){cmsg("Chat indisponible ici.","u");return}
+  if(chatN>=6){cmsg("L'utilisateur doit retourner travailler (6 questions maximum).","u");return}
+  i.value="";cmsg(q,"me");chatN++;mins+=1;stats();$("#cs").disabled=true;
+  var t=T[cur],facts=t.a.map(function(a){return "- "+a[0]+" : "+a[2]}).join("\n");
+  var sys="Tu joues "+t.u+", un utilisateur non technique qui a ouvert ce ticket. Son message : « "+t.msg+" ». Faits réels sur la situation (tu ne sais que ce qu'un utilisateur peut voir ou savoir, jamais les détails techniques) :\n"+facts+"\nCause réelle, SECRÈTE, ne la révèle jamais : "+t.x+"\nTon caractère : "+PERS[cur%4]+".\nRéponds en 1 ou 2 phrases, en français, comme cet utilisateur. Tu peux oublier ou mal interpréter un détail, mais tu ne contredis jamais les faits.";
+  hist.push("Technicien : "+q);
+  try{var r=await sm(sys+"\n\n"+hist.join("\n")+"\nUtilisateur :",{cache:false});var a=String(r.text||"").trim().replace(/^Utilisateur\s*:\s*/i,"");hist.push("Utilisateur : "+a);cmsg(a,"u")}
+  catch(e){cmsg(e&&e.code==="not_granted"?"Autorisation refusée.":"L'utilisateur ne répond pas, réessaie.","u")}
+  $("#cs").disabled=false;
+}
+function debrief(e){
+  var t=T[cur],h='<h3>Débrief</h3><p>'+satis()+'</p><p><b>Ton parcours</b> ('+path.length+' action'+(path.length>1?'s':'')+', '+mins+' min) :</p><ol>'+path.map(function(j){var a=t.a[j];return '<li>'+a[0]+' <span class="tk">· '+a[1]+' min'+(a[1]>=8?' · ⚠ action coûteuse':'')+'</span></li>'}).join('')+'</ol>';
+  var left=t.a.length-path.length;
+  h+='<p>'+(left>0?left+' action'+(left>1?'s':'')+' non explorée'+(left>1?'s':'')+'. ':'')+(errs?errs+' erreur'+(errs>1?'s':'')+' de diagnostic. ':'Diagnostic du premier coup. ')+(hints?hints+' indice'+(hints>1?'s':'')+' utilisé'+(hints>1?'s':'')+'.':'')+'</p>';
+  h+='<p>'+(path.some(function(j){return t.a[j][1]>=8})?'Astuce : les actions de 8 minutes ou plus (réinstaller, redémarrer un serveur…) se tentent rarement en premier.':mins>8?'Astuce : commence par les vérifications rapides (ping, ipconfig, comparer avec un poste qui marche).':'Beau rythme : peu de temps perdu.')+'</p>';
+  if(sampleOk)h+='<button class="ghost" id="dbc">💬 Débrief de Claude</button><p id="dbt"></p>';
+  if(sampleOk&&!ex)h+='<h3>Réponse à l\'utilisateur</h3><textarea id="ans" rows="4" maxlength="800" style="width:100%;font:inherit" aria-label="Ta réponse à l\'utilisateur" placeholder="Écris le message que tu enverrais pour clôturer le ticket (cause, solution, conseil)…"></textarea><button class="ghost" id="ansb">✉️ Faire noter par Claude</button><p id="anst"></p>';
+  e.insertAdjacentHTML("beforeend",h);
+  var b=$("#dbc");if(b)b.onclick=function(){claudeDebrief(b)};var ab2=$("#ansb");if(ab2)ab2.onclick=gradeAns;
+}
+async function claudeDebrief(b){
+  var sm=window.claude?await claude.use("sample"):null,o=$("#dbt");
+  if(!sm){o.textContent="Indisponible ici.";return}
+  b.disabled=true;o.textContent="Claude relit ton parcours…";
+  var t=T[cur],q="Tu es formateur en support informatique. Ticket : « "+t.n+" ». Cause réelle : "+t.x+" Actions du joueur dans l'ordre : "+path.map(function(j){return t.a[j][0]+" ("+t.a[j][1]+" min)"}).join(" ; ")+". Actions non faites : "+t.a.filter(function(a,j){return path.indexOf(j)<0}).map(function(a){return a[0]}).join(" ; ")+". Erreurs de diagnostic : "+errs+", indices : "+hints+", temps : "+mins+" min. Fais un débrief en 3 ou 4 phrases en français, sans liste : ce qui était bien, ce qui a fait perdre du temps, et un conseil de méthode.";
+  try{var r=await sm(q,{cache:false});o.textContent=String(r.text||"").trim()}catch(e){o.textContent="Débrief indisponible, réessaie.";b.disabled=false}
+}
+function sendRep(){
+  var m=$("#rm");
+  if(!db||!uid){m.textContent="Ouvre la page depuis ton compte claude.ai pour envoyer un signalement.";return}
+  db.collection("reports").doc().set({t:cur<BASE?cur:-1,n:String(T[cur].n).slice(0,80),k:$("#rk").value,text:$("#rt").value.trim().slice(0,200),uid:uid,ts:Date.now()}).then(function(){m.textContent="Merci, signalement envoyé.";$("#rt").value=""}).catch(function(){m.textContent="Envoi refusé : il faut un accès Contributeur."});
+}
+function tuto(on){$("#tuto").hidden=!on;if(on)$("#tok").focus()}
+var PERS=["pressé et un peu sec","très aimable mais perdu et bavard","agacé car c'est la deuxième fois","anxieux, craint d'avoir tout cassé"];
+var snd=lsGet("tm_snd")!=="0",AC=null;
+function beep(f,d,t){if(!snd)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+function jingle(){beep(523,.15);setTimeout(function(){beep(784,.3)},150)}
+function sndUi(){$("#snd").textContent=snd?"🔊 Sons":"🔇 Sons";$("#snd").setAttribute("aria-pressed",String(snd))}
+function normK(r){return r.trim().toLowerCase().replace(/([a-z0-9.])\/(\S)/g,"$1 /$2").replace(/\s-(?:n|count)\s+\d+/g,"").replace(/\s+-(?:t|4|6)\b/g,"").replace(/\s+/g," ").trim()}
+function satis(){var v=Math.max(0,100-4*mins-10*errs-5*hints-3*evN);return (v>=70?"😊":v>=40?"😐":"😠")+" Satisfaction de l'utilisateur : <b>"+v+" %</b>"}
+function weekKey(){var d=new Date(),t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())),n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);var y=t.getUTCFullYear();return y+"-W"+Math.ceil(((t-Date.UTC(y,0,1))/864e5+1)/7)}
+function jget(k,d){try{return JSON.parse(lsGet(k)||"")||d}catch(e){return d}}
+function wbGet(){var w=jget("tm_wb",{});return w.w===weekKey()?w:{w:weekKey(),b:{}}}
+function weekPts(){return pts(wbGet().b)}
+function weekN(){return Object.keys(wbGet().b).length}
+function weekUp(s){var w=wbGet(),up=s>(+w.b[cur]||0);if(up){w.b[cur]=s;lsSet("tm_wb",JSON.stringify(w))}return up}
+function capT(r){var t=0,n=0,b=r.best||{};for(var k in b){if(+k<BASE){t+=Math.min(+b[k]||0,200);n++}}return {t:t,n:n}}
+var QS=[["win",3,"Résoudre 3 tickets"],["net",2,"Résoudre 2 tickets Réseau"],["clean",1,"1 ticket sans erreur ni indice"],["cmd",3,"3 tickets résolus avec le terminal"]];
+function qGet(){var q=jget("tm_q",{});return q.w===weekKey()?q:{w:weekKey(),c:{}}}
+function questAdd(s){var q=qGet(),c=q.c,inc=function(k){c[k]=(c[k]||0)+1};inc("win");if(CAT[cur]===0)inc("net");if(!errs&&!hints)inc("clean");if(usedCmd)inc("cmd");lsSet("tm_q",JSON.stringify(q))}
+function weekHtml(){var c=qGet().c;return "<p><b>Quêtes de la semaine</b></p>"+QS.map(function(q){var v=c[q[0]]||0;return "<div>"+q[2]+" : <b>"+Math.min(v,q[1])+"/"+q[1]+"</b>"+(v>=q[1]?" ✅":"")+"</div>"}).join("")}
+function streakUp(){var x=jget("tm_streak",{});if(x.d===dkey)return;var y=new Date(Date.now()-864e5).toISOString().slice(0,10);x.n=x.d===y?(x.n||0)+1:1;x.d=dkey;x.b=Math.max(x.b||0,x.n);lsSet("tm_streak",JSON.stringify(x))}
+function streakTxt(){var x=jget("tm_streak",{}),t=new Date().toISOString().slice(0,10),y=new Date(Date.now()-864e5).toISOString().slice(0,10),n=x.d===t||x.d===y?x.n||0:0;return "🔥 Série de défis du jour : <b>"+n+"</b> jour"+(n>1?"s":"")+" (record "+(x.b||0)+")"}
+function weakUp(s){var w=jget("tm_weak",[]),i=w.indexOf(cur);if(errs>0||s<60){if(i<0)w.push(cur)}else if(i>=0)w.splice(i,1);lsSet("tm_weak",JSON.stringify(w))}
+var wkc=0,DESC={ipconfig:"Affiche la configuration IP (adresse, passerelle, DNS, DHCP)",ping:"Teste si une machine répond sur le réseau",arp:"Associe adresses IP et adresses MAC voisines",nslookup:"Interroge un serveur DNS",whoami:"Affiche l'utilisateur et ses groupes",net:"Gère comptes, groupes, partages",gpresult:"Liste les stratégies de groupe appliquées",gpupdate:"Force l'application des stratégies de groupe",w32tm:"Gère et vérifie la synchronisation de l'heure",nltest:"Teste le canal sécurisé avec le domaine",repadmin:"Diagnostique la réplication Active Directory",certutil:"Gère et affiche les certificats",fsutil:"Informations bas niveau sur les volumes",outlook:"Lance Outlook (/safe : sans compléments)",hostname:"Affiche le nom de la machine"};
+function cmdSave(k){var a=jget("tm_cmds",[]);if(a.indexOf(k)<0){a.push(k);lsSet("tm_cmds",JSON.stringify(a))}}
+function memo(){var a=jget("tm_cmds",[]),o=$("#memot");o.hidden=false;o.value=a.length?"FICHE MÉMO — commandes rencontrées\n\n"+a.map(function(k){return k+"\n   → "+(DESC[k.split(" ")[0]]||"Commande de diagnostic")}).join("\n"):"Aucune commande tapée pour l'instant : utilise le terminal pendant un ticket."}
+function revise(){var w=jget("tm_weak",[]);if(!w.length){$("#rev").textContent="Rien à réviser 🎉";return}start(w[Math.floor(Math.random()*w.length)]);window.scrollTo({top:0,behavior:"smooth"})}
+function advise(){var b=-1;T.forEach(function(t,i){if(i<BASE&&CAT[i]===wkc&&!+lsGet("tm_best_"+i)&&(b<0||t.l<T[b].l))b=i});if(b<0)b=Math.floor(Math.random()*BASE);start(b);window.scrollTo({top:0,behavior:"smooth"})}
+function honor(){var o=$("#hon");if(cur>=BASE||!LR.length){o.textContent="";return}var r=LR.filter(function(x){return x.best&&+x.best[cur]}).map(function(x){return [x.pseudo,Math.min(+x.best[cur],200)]}).sort(function(a,b){return b[1]-a[1]}).slice(0,3);o.innerHTML=r.length?"🏆 Tableau d'honneur : "+r.map(function(x,i){return ["🥇","🥈","🥉"][i]+" "+esc(x[0])+" ("+x[1]+")"}).join(" · "):""}
+function goal(){var o=$("#goal");if(!prof||!prof.team){o.textContent="";return}var m=LR.filter(function(r){return r.team===prof.team}),tw=0;m.forEach(function(r){if(r.wk===weekKey())tw+=Math.min(+r.wp||0,200*BASE)});var g=150*m.length;o.innerHTML="<p>🎯 Objectif de l'équipe <b>"+esc(prof.team)+"</b> cette semaine : <b>"+tw+" / "+g+" pts</b></p><progress max=\""+g+"\" value=\""+Math.min(tw,g)+"\" style=\"width:100%\"></progress>"}
+var ex=null,genN=0,carK=-1;
+async function genOut(k){
+  var sm=await claude.use("sample"),t=T[cur];
+  var q="Tu simules un terminal Windows de support. Faits réels sur la situation (ne les contredis jamais) :\n"+t.a.map(function(a){return "- "+a[0]+" : "+a[2]}).join("\n")+"\nCause réelle (secrète, n'y fais jamais allusion) : "+t.x+"\nLe technicien tape : "+k+"\nÉcris UNIQUEMENT la sortie brute plausible de cette commande (8 lignes maximum, en français, sans commentaire). Si la commande n'apporte rien sur cette panne, montre un résultat normal.";
+  var r=await sm(q,{cache:false});return String(r.text||"").trim().slice(0,600);
+}
+async function gradeAns(){
+  var sm=window.claude?await claude.use("sample"):null,o=$("#anst"),a=$("#ans").value.trim();
+  if(!sm){o.textContent="Indisponible ici.";return}
+  if(a.length<20){o.textContent="Écris au moins une ou deux phrases.";return}
+  $("#ansb").disabled=true;o.textContent="Claude relit ton message…";var t=T[cur];
+  var q="Tu corriges le message de clôture écrit par un technicien support. Utilisateur : "+t.u+". Ticket : « "+t.n+" ». Cause réelle : "+t.x+" Résolution : "+t.f+" Message du technicien : « "+a+" ». Note de 0 à 10 : clarté, ton aimable et rassurant, explication de la cause avec des mots simples, prochaines étapes ou conseil de prévention, exactitude (ne doit pas contredire la cause réelle). Réponds uniquement par un JSON {\"note\":entier,\"bien\":\"une phrase\",\"ameliorer\":\"une phrase\"}.";
+  try{
+    var r=await sm.json(q,{cache:false}),n=Math.max(0,Math.min(10,Math.round(+r.note)));
+    o.textContent="Note : "+n+"/10 · Bien : "+String(r.bien||"")+" · À améliorer : "+String(r.ameliorer||"");
+    if(n>=8){var g=achGet();if(g.indexOf("pen")<0){g.push("pen");lsSet("tm_ach",JSON.stringify(g));renderAch();o.textContent+=" · 🏅 Succès débloqué : Plume"}}
+  }catch(e){o.textContent="Notation indisponible, réessaie.";$("#ansb").disabled=false}
+}
+function startExam(){var ids=[];while(ids.length<5){var i=Math.floor(Math.random()*BASE);if(ids.indexOf(i)<0)ids.push(i)}ex={ids:ids,sc:[]};start(ids[0],3);window.scrollTo({top:0,behavior:"smooth"})}
+function examNext(){if(ex.sc.length<5){start(ex.ids[ex.sc.length],3);window.scrollTo({top:0,behavior:"smooth"})}else showExam()}
+function showExam(){
+  var note=Math.round(ex.sc.reduce(function(a,v){return a+Math.min(v,100)/5},0)/5*10)/10;
+  var m=note>=16?"Très bien":note>=14?"Bien":note>=12?"Assez bien":note>=10?"Passable":"Ajourné";
+  var nm=prof?esc(prof.pseudo):"Candidat",e=$("#end");
+  e.style.cssText="";e.hidden=false;$("#dgp").hidden=true;$("#dg").hidden=true;
+  e.innerHTML='<h2>🎓 Résultat de l\'examen</h2><p style="font-size:1.4rem"><b>'+note.toFixed(1)+' / 20</b> · '+m+'</p><ol>'+ex.ids.map(function(i,k){return '<li>'+T[i].n+' : '+ex.sc[k]+' pts</li>'}).join('')+'</ol>'+(note>=12?'<div style="border:3px double var(--ac);border-radius:12px;padding:16px;text-align:center;margin:12px 0"><b>NeptunQuest · Certificat de réussite</b><br>Décerné à <b>'+nm+'</b><br>Examen de support informatique : <b>'+note.toFixed(1)+'/20</b> ('+m+')<br><small>'+new Date().toLocaleDateString("fr-FR")+'</small></div><p><small>Fais une capture d\'écran pour conserver ton certificat.</small></p>':'')+'<div class="row"><button class="primary" id="exr" style="margin:0">Repasser un examen</button></div>';
+  $("#exr").onclick=startExam;
+  if(note>=12){var g=achGet();if(g.indexOf("dip")<0){g.push("dip");lsSet("tm_ach",JSON.stringify(g));renderAch()}}
+}
+var CAR=[["Chapitre 1 · Le stage","Premier jour au support : des urgences simples et un utilisateur qui t'attend. Résous 5 tickets Débutant.",0],["Chapitre 2 · Premier poste","On te confie les pannes du quotidien. Résous 5 tickets Confirmé.",1],["Chapitre 3 · Responsable support","Les cas tordus arrivent sur ton bureau. Résous 5 tickets Expert.",2]];
+function carCnt(l){var n=0;T.forEach(function(t,i){if(i<BASE&&t.l===l&&+lsGet("tm_best_"+i))n++});return n}
+function carHtml(){
+  var cu=-1,h="<p><b>Parcours carrière</b></p>";
+  CAR.forEach(function(c,k){var n=carCnt(c[2]),ok=n>=5,lock=k>0&&carCnt(CAR[k-1][2])<5;if(!ok&&!lock&&cu<0)cu=k;h+="<div>"+(ok?"✅ ":lock?"🔒 ":"▶ ")+"<b>"+c[0]+"</b> · "+Math.min(n,5)+"/5"+(lock?"":"<br><small>"+c[1]+"</small>")+"</div>"});
+  carK=cu;return h+(cu>=0?'<p><button class="ghost" id="car">▶ Continuer la carrière</button></p>':"<p>🎓 Carrière terminée !</p>");
+}
+function carGo(){var l=CAR[carK][2],c=[];T.forEach(function(t,i){if(i<BASE&&t.l===l&&!+lsGet("tm_best_"+i))c.push(i)});if(!c.length)c=[0];start(c[Math.floor(Math.random()*c.length)]);window.scrollTo({top:0,behavior:"smooth"})}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+var QZ=[["Port par défaut de HTTPS ?",["443","80","8080","22"]],["Port utilisé par le Bureau à distance (RDP) ?",["3389","3306","445","5900"]],["Port d'SSH ?",["22","21","23","25"]],["Commande qui renouvelle une adresse DHCP ?",["ipconfig /renew","ipconfig /flushdns","netsh winsock reset","arp -d"]],["Commande qui vide le cache DNS de Windows ?",["ipconfig /flushdns","ipconfig /release","arp -d","nbtstat -R"]],["Une adresse en 169.254.x.x signifie :",["Aucune réponse DHCP (APIPA)","Une adresse publique","Une boucle locale","Une adresse de VPN"]],["Quel protocole attribue automatiquement les adresses IP ?",["DHCP","DNS","NTP","SNMP"]],["Port du protocole SMTP ?",["25","110","143","993"]],["Commande pour tracer la route vers un hôte sous Windows ?",["tracert","route print","netstat -r","nslookup"]],["Commande qui liste les GPO appliquées ?",["gpresult /r","gpedit","secpol","dcdiag"]],["Commande qui force l'application des GPO ?",["gpupdate /force","gpresult","ipconfig /renew","sfc /scannow"]],["À quoi sert sfc /scannow ?",["Réparer les fichiers système","Scanner les virus","Lister les ports ouverts","Défragmenter le disque"]],["Que fait un RAID 1 ?",["Un miroir de deux disques","Répartit sans redondance","Une parité répartie","Une grappe de 4 disques minimum"]],["La règle de sauvegarde 3-2-1 :",["3 copies, 2 supports, 1 hors site","3 jours, 2 serveurs, 1 NAS","3 NAS, 2 clouds, 1 disque","1 copie par jour, 2 par semaine, 3 par mois"]],["Que fait l'authentification multifacteur (MFA) ?",["Ajoute un second facteur de connexion","Protège les disques des pannes","Protège le réseau des coupures","Filtre le spam"]],["Port du DNS ?",["53","67","123","161"]],["Port du LDAP non chiffré ?",["389","636","88","445"]],["Quel écart d'horloge Kerberos tolère-t-il par défaut ?",["5 minutes","30 secondes","1 heure","24 heures"]],["Quel ID d'événement Windows signale un compte verrouillé ?",["4740","4624","4625","4688"]],["Que fait nslookup ?",["Interroge un serveur DNS","Mesure le débit","Liste les ports ouverts","Affiche la table ARP"]],["Le masque 255.255.255.0 s'écrit :",["/24","/16","/8","/30"]],["Commande qui affiche les connexions réseau actives ?",["netstat -an","ipconfig","arp -a","tracert"]],["À quoi sert le DHCP snooping ?",["Bloquer les faux serveurs DHCP sur un switch","Espionner les clients","Réserver des adresses","Chiffrer le DHCP"]],["Où se trouve le vrai svchost.exe ?",["C:\\Windows\\System32","C:\\Users\\Public","C:\\Temp","C:\\ProgramData"]]];
+var PH=[["support@micr0soft-security.com","Votre compte sera suspendu dans 24 h","Cliquez ici pour confirmer votre mot de passe.",1,"Domaine mal orthographié (micr0soft), urgence et demande de mot de passe."],["rh@entreprise.local","Planning des congés d'été","Le planning est disponible sur l'intranet, comme chaque année.",0,"Expéditeur interne, message habituel, aucun lien suspect ni demande de données."],["Direction <pdg.dupont@gmail.com>","Urgent : virement confidentiel","Je suis en réunion. Fais un virement de 18 400 € sur ce RIB, ne dis rien à personne.",1,"Fraude au président : adresse gmail, urgence, secret et virement."],["no-reply@colissimo-suivi.top","Votre colis est en attente","Des frais de 1,99 € sont à régler : colissimo-suivi.top/payer",1,"Domaine en .top et petits frais pour récupérer des données de carte."],["it-support@entreprise.local","Maintenance planifiée samedi 22h","Le serveur de fichiers sera indisponible 2 heures. Aucune action n'est requise.",0,"Information interne, sans lien ni demande d'action."],["notifications@linkedin.com","Vous avez 3 nouvelles invitations","Consultez vos invitations depuis l'application ou sur linkedin.com.",0,"Domaine officiel, aucune demande de données. Prudence tout de même : passer par l'application plutôt que le lien."],["facturation@fournisseur-pieces.fr","Facture OCT.xlsm","Activez les macros pour afficher la facture.",1,"Pièce jointe .xlsm qui demande d'activer les macros : classique pour installer un malware."],["Service informatique <support@entreprise.local>","Mise à jour obligatoire du mot de passe","Connectez-vous ici : http://entreprise-login.net\n(Répondre à : helpdesk@entreprise-support.net)",1,"Le lien et l'adresse de réponse ne sont pas du domaine de l'entreprise."]];
+function bin8(v){return ("00000000"+v.toString(2)).slice(-8)}
+function mask(n){var m=[];for(var i=0;i<4;i++){var b=Math.max(0,Math.min(8,n-8*i));m.push(256-Math.pow(2,8-b))}return m.join(".")}
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function mkQ(q,ans,c,why){var o=[String(ans)];c.forEach(function(x){x=String(x);if(o.indexOf(x)<0&&o.length<4)o.push(x)});o=shuf(o);return {q:q,o:o,a:o.indexOf(String(ans)),why:why}}
+function mkNet(){var r=[];for(var i=0;i<10;i++){var t=i%5,n,v;
+  if(t===0){n=rnd(17,30);r.push(mkQ("Quel est le masque d'un réseau /"+n+" ?",mask(n),[mask(n-1),mask(n+1),mask(n+2),mask(n-2)]))}
+  else if(t===1){n=rnd(20,30);var h=Math.pow(2,32-n);r.push(mkQ("Combien d'hôtes utilisables dans un /"+n+" ?",h-2,[h,h-1,2*h-2,h/2-2],"2^(32-"+n+") − 2 (adresse réseau et diffusion retirées)."))}
+  else if(t===2){n=rnd(25,29);var ho=rnd(1,254),bl=Math.pow(2,32-n),nt=Math.floor(ho/bl)*bl,pre="192.168.10.";r.push(mkQ("Adresse réseau de "+pre+ho+"/"+n+" ?",pre+nt,[nt+bl,nt-bl,nt+2*bl,ho+1,nt+1,nt+2,nt+3,nt+4].filter(function(x){return x>=0&&x<=255&&x!==nt}).map(function(x){return pre+x}),"Blocs de "+bl+" adresses : "+nt+" à "+(nt+bl-1)+"."))}
+  else if(t===3){v=rnd(2,255);r.push(mkQ("En décimal : "+bin8(v)+" ?",v,[v+1,v-1,v+2,v-2,v^1,v^2],"Somme des puissances de 2 correspondant aux 1."))}
+  else{v=rnd(2,255);r.push(mkQ("En binaire : "+v+" ?",bin8(v),[bin8(v^1),bin8(v^4),bin8(v^32),bin8(v^2),bin8(v^8)]))}}
+  return r}
+function mkQuiz(){return shuf(QZ).slice(0,10).map(function(q){var o=shuf(q[1]);return {q:q[0],o:o,a:o.indexOf(q[1][0])}})}
+function mkPhish(){return shuf(PH).map(function(e){return {q:"De : "+e[0]+"\nObjet : "+e[1]+"\n\n"+e[2],o:["Légitime","Phishing"],a:e[3]?1:0,why:e[4]}})}
+var MQ=null,MG={quiz:["#g-quiz","⚡ Quiz chrono","10 questions sur les ports, commandes et notions de base. 15 secondes par question, bonus de rapidité et de série.",mkQuiz,15],phish:["#g-phish","🎣 Phishing ou légitime ?","Analyse 8 mails et dis s'ils sont légitimes ou frauduleux. L'explication s'affiche après chaque réponse.",mkPhish,30],net:["#g-net","🧮 Sous-réseaux et binaire","10 questions de masques, hôtes, adresses réseau et conversions. 25 secondes par question.",mkNet,25]};
+function mqIntro(g){var c=MG[g],b=$(c[0]),best=lsGet("tm_best_"+g);b.innerHTML="<h2>"+c[1]+"</h2><p class=\"sub\">"+c[2]+"</p><p>Meilleur score : <b>"+(best||"–")+"</b></p><button class=\"primary\" id=\"mqs\">Commencer</button>";b.querySelector("#mqs").onclick=function(){mqStart(g)}}
+function mqStart(g){var c=MG[g];MQ={g:g,box:c[0],title:c[1],qs:c[3](),i:0,sc:0,st:0,secs:c[4]};mqAsk()}
+function mqAsk(){
+  var m=MQ,q=m.qs[m.i];if(!q){mqEnd();return}
+  m.left=m.secs;var b=$(m.box);
+  b.innerHTML="<h2>"+m.title+"</h2><p class=\"sub\">Question "+(m.i+1)+"/"+m.qs.length+" · Score : <b>"+m.sc+"</b></p><progress id=\"mqp\" max=\""+m.secs+"\" value=\""+m.secs+"\" style=\"width:100%\"></progress><div class=\"ticket\"><h3 class=\"mqq\" style=\"margin:0\"></h3></div><div id=\"mqo\" class=\"grid\" style=\"margin-top:10px\"></div><p id=\"mqf\" role=\"status\"></p>";
+  b.querySelector(".mqq").textContent=q.q;
+  q.o.forEach(function(t,j){var bt=document.createElement("button");bt.className="act";bt.textContent=t;bt.onclick=function(){mqPick(j)};b.querySelector("#mqo").appendChild(bt)});
+  clearInterval(m.t);m.t=setInterval(function(){m.left-=.1;var p=b.querySelector("#mqp");if(p)p.value=Math.max(0,m.left);if(m.left<=0)mqPick(-1)},100);
+}
+function mqPick(j){
+  var m=MQ,q=m.qs[m.i];clearInterval(m.t);
+  var ok=j===q.a,bs=[].slice.call($(m.box).querySelector("#mqo").children);
+  if(ok){m.st++;m.sc+=10+Math.ceil(Math.max(0,m.left))+2*(m.st-1);beep(660,.1)}else{m.st=0;beep(180,.25,"square")}
+  bs.forEach(function(b,k){b.disabled=true;if(k===q.a)b.classList.add("good");else if(k===j)b.classList.add("bad")});
+  $(m.box).querySelector("#mqf").textContent=(ok?"✅ Correct. ":(j<0?"⏱ Temps écoulé. ":"❌ Raté. "))+(q.why||"");
+  var nx=document.createElement("button");nx.className="primary";nx.style.marginTop="6px";nx.textContent=m.i+1<m.qs.length?"Question suivante":"Voir le score";
+  nx.onclick=function(){m.i++;mqAsk()};$(m.box).querySelector("#mqf").appendChild(document.createElement("br"));$(m.box).querySelector("#mqf").appendChild(nx);nx.focus();
+}
+function mqEnd(){
+  var m=MQ,k="tm_best_"+m.g,old=+lsGet(k)||0;if(m.sc>old)lsSet(k,m.sc);jingle();
+  $(m.box).innerHTML="<h2>"+m.title+"</h2><div class=\"ticket\" style=\"margin-top:10px\"><h2>Score : "+m.sc+(m.sc>old&&old?" · Nouveau record !":"")+"</h2><p>Meilleur : <b>"+Math.max(m.sc,old)+"</b></p><div class=\"row\"><button class=\"primary\" id=\"mqr\" style=\"margin:0\">Rejouer</button></div></div>";
+  $(m.box).querySelector("#mqr").onclick=function(){mqStart(m.g)};
+}
+function game(g){
+  ["tm","quiz","phish","net","escape"].forEach(function(x){$("#g-"+x).hidden=x!==g;if(x!==g&&x!=="tm")$("#g-"+x).innerHTML=""});
+  [].forEach.call(document.querySelectorAll("#hub .tab"),function(b){if(b.dataset.g===g)b.setAttribute("aria-current","true");else b.removeAttribute("aria-current")});
+  if(MQ)clearInterval(MQ.t);if(es)clearInterval(es.tm);if(g==="escape")escIntro();else if(g!=="tm")mqIntro(g);
+}
+var evDone={},evN=0,XI=[],EV={12:[[4,"📞 Deux autres étages signalent des postes sans connexion : ça touche surtout les appareils récents."]],13:[[6,"📞 Le service comptabilité signale que les visios coupent aussi : tout le bureau est touché."]],19:[[5,"📞 L'agence précise qu'un voyant orange clignotait sur le routeur ce matin."]],20:[[5,"📞 Un collègue du 2e étage dit avoir « rebranché quelque chose » ce matin, sans préciser quoi."]],25:[[6,"📞 Le service finance confirme que seuls les postes mis à jour hier soir sont touchés."]],29:[[5,"📞 La direction demande un point : les factures doivent partir avant midi."]],33:[[5,"📞 L'utilisateur précise que son portable est resté dans un tiroir pendant les vacances d'été."]],38:[[6,"📞 Un autre utilisateur de l'agence signale que son ancien mot de passe fonctionne encore."]],39:[[4,"📞 Le standard signale que les téléphones IP fonctionnent encore : seul l'annuaire semble touché."]],54:[[5,"📞 Les RH confirment que d'autres comptes ont perdu leurs licences cette nuit."]],58:[[4,"📞 Le responsable sécurité confirme qu'un poste a émis du trafic inhabituel à 02h14."]],62:[[4,"📞 Le support constructeur indique que ces disques ont plus de 6 ans."]]};
+function checkEv(){
+  if(fin||!T[cur])return;
+  var ev=(cur<BASE&&EV[cur]||[]).concat([[6,"📞 L'utilisateur relance : « Alors, ça avance ? »"],[12,"📞 Le responsable demande un point d'avancement sur ce ticket."]]);
+  ev.forEach(function(e,i){var k=cur+"_"+i;if(mins>=e[0]&&!evDone[k]){evDone[k]=1;evN++;var b=$("#evb");b.hidden=false;b.textContent=e[1];beep(880,.15)}});
+}
+function impT(g){
+  if(!g||typeof g!=="object")throw "un élément n'est pas un objet";
+  var k=+g.k,l=+g.l;
+  if(!(k>=0&&k<C.length))throw "catégorie k invalide (0 à "+(C.length-1)+")";
+  if(!(l>=0&&l<=2))throw "niveau l invalide (0 à 2)";
+  if(!g.n||!g.u||!g.msg||!g.x||!g.f)throw "champs n, u, msg, x et f obligatoires";
+  if(!Array.isArray(g.a)||g.a.length<5||!g.a.every(function(a){return Array.isArray(a)&&a.length>=3&&a[0]&&a[2]}))throw "il faut au moins 5 actions [libellé, minutes, résultat]";
+  if(!Array.isArray(g.g)||g.g.length<1||g.g.length>2)throw "g : 1 ou 2 bons diagnostics";
+  if(!Array.isArray(g.b)||g.b.length<2||!g.b.every(function(b){return Array.isArray(b)&&b[0]&&b[1]}))throw "b : au moins 2 mauvais diagnostics [libellé, pourquoi]";
+  var cc={};if(g.c&&typeof g.c==="object")Object.keys(g.c).forEach(function(q){var i=+g.c[q];if(Number.isInteger(i)&&i>=0&&i<g.a.length)cc[normK(q)]=i});
+  return {k:k,l:l,n:esc(g.n),u:esc(g.u),p:/haute/i.test(g.p)?"Priorité haute":"Priorité moyenne",msg:esc(g.msg),x:esc(g.x),f:esc(g.f),c:cc,
+    a:g.a.map(function(a){return [esc(a[0]),Math.max(1,Math.min(30,+a[1]||2)),esc(a[2])]}),
+    d:g.g.map(function(v){return [esc(v),1,""]}).concat(g.b.map(function(b){return [esc(b[0]),0,esc(b[1])]}))};
+}
+function xLoad(snap){
+  var rows=snap.docs.map(function(d){var o=d.data();return {id:d.id,j:o.j,ts:o.ts||0}}).filter(function(r){return r.j}).sort(function(a,b){return a.ts-b.ts});
+  var g=T[BASE];T.length=BASE;if(g)T[BASE]=g;XI=[];
+  rows.forEach(function(r,i){try{T[2000+i]=impT(JSON.parse(r.j));XI.push({id:r.id,i:2000+i})}catch(e){}});
+  renderX();
+}
+function renderX(){
+  var l=$("#xtl"),a=$("#admx");l.innerHTML="";a.innerHTML="";$("#xt").hidden=!XI.length;
+  XI.forEach(function(x){
+    var t=T[x.i],b=document.createElement("button");b.className="tab";b.innerHTML="<b>"+t.n+"</b><small>"+LV[t.l]+" · "+C[t.k]+"</small>";b.onclick=function(){start(x.i);window.scrollTo({top:0,behavior:"smooth"})};l.appendChild(b);
+    var li=document.createElement("li");li.innerHTML=t.n+" ";var d=document.createElement("button");d.className="ghost";d.textContent="Supprimer";
+    d.onclick=function(){var r=db.collection("tickets").doc(x.id);(r.delete?r.delete():r.set({j:"",ts:0})).catch(function(){$("#admm").textContent="Suppression refusée : réservée au propriétaire."})};
+    li.appendChild(d);a.appendChild(li);
+  });
+}
+async function admImport(){
+  var m=$("#admm"),arr;m.textContent="";
+  try{arr=JSON.parse($("#admj").value)}catch(e){m.textContent="JSON invalide : "+e.message;return}
+  if(!Array.isArray(arr))arr=[arr];
+  for(var i=0;i<arr.length;i++){try{impT(arr[i])}catch(e){m.textContent="Ticket "+(i+1)+" : "+e;return}}
+  if(!db){m.textContent="Base indisponible : ouvre la page depuis ton compte claude.ai.";return}
+  try{for(var j=0;j<arr.length;j++)await db.collection("tickets").doc().set({j:JSON.stringify(arr[j]),ts:Date.now()+j});
+    m.textContent=arr.length+" ticket"+(arr.length>1?"s":"")+" importé"+(arr.length>1?"s":"")+".";$("#admj").value=""}
+  catch(e){m.textContent="Import refusé : réservé au propriétaire de la page."}
+}
+var toolN=0,TL=[["🖥 Gestionnaire des tâches","le Gestionnaire des tâches Windows (onglets Processus et Performances : processeur, mémoire, disque, réseau)"],["👥 Annuaire Active Directory","la console Utilisateurs et ordinateurs Active Directory (compte concerné : onglets Compte et Membre de, état du verrouillage, dernière connexion)"],["📜 Observateur d'événements","l'Observateur d'événements Windows (journaux Système et Application récents, avec niveaux, sources et ID)"],["💾 Gestion des disques","la Gestion des disques et l'état SMART (volumes, espace libre, état de santé)"]],NODES=[["💻 Poste","le poste de l'utilisateur (carte réseau, adresse IP, état du lien)"],["🔌 Câble / prise","le câble réseau et la prise murale (LED, vitesse négociée, pertes)"],["🔀 Switch","le switch de l'étage (état du port, VLAN, erreurs)"],["🛣 Routeur","le routeur et la passerelle (ping, route par défaut, DHCP, DNS)"],["🌍 Serveurs / Internet","les serveurs et Internet (ping, résolution DNS, accès aux applications)"]];
+function toolsUi(){
+  var b=$("#toolb");TL.forEach(function(x){var bt=document.createElement("button");bt.className="ghost";bt.textContent=x[0];bt.onclick=function(){simTool(x[0],x[1])};b.appendChild(bt)});
+  var c=$("#chain");NODES.forEach(function(x,i){if(i){var ar=document.createElement("span");ar.textContent="→";ar.setAttribute("aria-hidden","true");c.appendChild(ar)}var bt=document.createElement("button");bt.className="ghost";bt.textContent=x[0];bt.onclick=function(){simTool("Test du maillon "+x[0],"un test du maillon réseau suivant : "+x[1]+". Indique clairement si ce maillon fonctionne normalement ou non")};c.appendChild(bt)});
+}
+async function simTool(title,desc){
+  var o=$("#toolo");o.hidden=false;
+  if(fin)return;
+  if(ex){o.textContent="Les outils sont désactivés pendant l'examen.";return}
+  if(toolN>=6){o.textContent="Tu as déjà consulté 6 outils sur ce ticket.";return}
+  var sm=window.claude?await claude.use("sample"):null;
+  if(!sm){o.textContent="Outils indisponibles ici.";return}
+  toolN++;mins+=1;stats();o.textContent=title+" : chargement…";
+  var t=T[cur];
+  var q="Tu simules "+desc+" sur le poste concerné par un ticket de support. Faits réels (ne les contredis jamais) :\n"+t.a.map(function(a){return "- "+a[0]+" : "+a[2]}).join("\n")+"\nCause réelle (secrète, n'y fais jamais allusion) : "+t.x+"\nÉcris UNIQUEMENT ce que l'outil afficherait : 8 à 12 lignes de texte brut (liste ou tableau), réalistes, en français. Si l'outil n'apporte rien sur cette panne, montre un état normal.";
+  try{var r=await sm(q,{cache:false});o.textContent=title+" (simulé, +1 min)\n\n"+String(r.text||"").trim().slice(0,900)}catch(e){o.textContent=title+" : indisponible, réessaie."}
+}
+var PR=[];
+function propUi(){
+  var f=$("#pform"),sty="width:100%;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);margin:2px 0 6px";
+  function inp(id,label,ph,area){var l=document.createElement("label");l.style.display="block";l.textContent=label;var i=document.createElement(area?"textarea":"input");i.id=id;i.maxLength=area?400:200;if(area)i.rows=2;i.placeholder=ph||"";i.style.cssText=sty;l.appendChild(i);f.appendChild(l)}
+  function sel(id,label,opts){var l=document.createElement("label");l.style.display="block";l.textContent=label;var s2=document.createElement("select");s2.id=id;s2.style.cssText=sty;opts.forEach(function(o,k){s2.add(new Option(o,k))});l.appendChild(s2);f.appendChild(l)}
+  sel("pk","Catégorie",C);sel("pl","Niveau",LV);
+  inp("ptitle","Titre du ticket","Ex. : Imprimante hors ligne");inp("pu","Utilisateur","Prénom N. · Service");
+  var l=document.createElement("label");l.style.display="block";l.textContent="Priorité";var pp=document.createElement("select");pp.id="pp";pp.style.cssText=sty;pp.add(new Option("Priorité moyenne","m"));pp.add(new Option("Priorité haute","h"));l.appendChild(pp);f.appendChild(l);
+  inp("pmsg","Message de l'utilisateur","Ce que dit l'utilisateur, avec ses approximations",1);
+  for(var i=0;i<5;i++){inp("pa"+i+"l","Action "+(i+1),"Ex. : Pinger la passerelle");inp("pa"+i+"m","Minutes de l'action "+(i+1),"1 à 30");inp("pa"+i+"r","Résultat de l'action "+(i+1),"Ce qu'on observe",1)}
+  inp("pg","Bon diagnostic","La vraie cause, en une phrase");
+  inp("pb0l","Faux diagnostic 1","");inp("pb0w","Pourquoi il est faux (1)","");inp("pb1l","Faux diagnostic 2","");inp("pb1w","Pourquoi il est faux (2)","");
+  inp("px","Explication de la cause","Comment on la déduit des indices",1);inp("pfx","Résolution","Les étapes pour corriger",1);
+  var b=document.createElement("button");b.className="primary";b.textContent="Envoyer ma proposition";b.onclick=propSend;f.appendChild(b);
+}
+function propSend(){
+  var m=$("#pm"),v=function(i){return $("#"+i).value.trim()},a=[];m.textContent="";
+  for(var i=0;i<5;i++){if(v("pa"+i+"l")||v("pa"+i+"r"))a.push([v("pa"+i+"l"),+v("pa"+i+"m")||2,v("pa"+i+"r")])}
+  var g={k:+v("pk"),l:+v("pl"),n:v("ptitle"),u:v("pu"),p:$("#pp").value==="h"?"Priorité haute":"Priorité moyenne",msg:v("pmsg"),a:a,g:[v("pg")].filter(Boolean),b:[[v("pb0l"),v("pb0w")],[v("pb1l"),v("pb1w")]].filter(function(x){return x[0]&&x[1]}),x:v("px"),f:v("pfx")};
+  try{impT(g)}catch(e){m.textContent="Proposition incomplète : "+e;return}
+  if(!db||!uid){m.textContent="Ouvre la page depuis ton compte claude.ai pour envoyer une proposition.";return}
+  db.collection("proposals").doc().set({j:JSON.stringify(g),uid:uid,pseudo:prof?prof.pseudo:"",ts:Date.now(),st:"new"}).then(function(){m.textContent="Merci ! Ta proposition sera relue par le propriétaire.";$("#pform").querySelectorAll("input,textarea").forEach(function(x){x.value=""})}).catch(function(){m.textContent="Envoi refusé : il faut un accès Contributeur."});
+}
+function pLoad(snap){
+  PR=snap.docs.map(function(d){var o=d.data();o.id=d.id;return o}).filter(function(r){return r.st==="new"&&r.j}).sort(function(a,b){return a.ts-b.ts});
+  var o=$("#admp");o.innerHTML="";
+  if(!PR.length){o.innerHTML="<li>Aucune proposition en attente.</li>";return}
+  PR.forEach(function(r){
+    var g={};try{g=JSON.parse(r.j)}catch(e){}
+    var li=document.createElement("li");li.innerHTML="<b>"+esc(g.n||"?")+"</b> · "+esc(C[g.k]||"")+" · "+esc(LV[g.l]||"")+" · par "+esc(r.pseudo||"anonyme")+"<br><small>"+esc(String(g.msg||"").slice(0,160))+"</small><br>";
+    [["Approuver",1],["Rejeter",0]].forEach(function(x){var b=document.createElement("button");b.className="ghost";b.textContent=x[0];b.onclick=function(){propDecide(r,x[1])};li.appendChild(b)});
+    o.appendChild(li);
+  });
+}
+async function propDecide(r,ok){
+  try{if(ok)await db.collection("tickets").doc().set({j:r.j,ts:Date.now()});await db.collection("proposals").doc(r.id).update({st:ok?"approved":"rejected"})}
+  catch(e){$("#admm").textContent="Action refusée : réservée au propriétaire de la page."}
+}
+var es=null,ESC=[["1 · Le journal du pare-feu","Un écran affiche le journal du pare-feu. Quelle adresse IP apparaît le plus souvent en DENY ? (adresse complète)","02:14:01 DENY 185.220.101.5 -> 192.168.10.10:22\n02:14:03 DENY 45.155.205.9 -> 192.168.10.10:3389\n02:14:05 DENY 185.220.101.5 -> 192.168.10.10:22\n02:14:07 ALLOW 192.168.10.44 -> 192.168.10.5:53\n02:14:09 DENY 185.220.101.5 -> 192.168.10.12:22\n02:14:12 DENY 203.0.113.77 -> 192.168.10.10:443\n02:14:14 DENY 185.220.101.5 -> 192.168.10.10:22\n02:14:16 ALLOW 192.168.10.51 -> 192.168.10.5:445\n02:14:18 DENY 45.155.205.9 -> 192.168.10.12:3389\n02:14:21 DENY 185.220.101.5 -> 192.168.10.10:22\n02:14:23 DENY 203.0.113.77 -> 192.168.10.10:80\n02:14:25 DENY 185.220.101.5 -> 192.168.10.12:22\n02:14:28 ALLOW 192.168.10.44 -> 192.168.10.5:88\n02:14:30 DENY 45.155.205.9 -> 192.168.10.10:3389",["185.220.101.5"],"Compte les lignes DENY pour chaque adresse source."],["2 · Le digicode","Le digicode demande le nombre d'hôtes utilisables d'un réseau /26.","",["62"],"2 puissance (32 − 26), moins l'adresse réseau et l'adresse de diffusion."],["3 · Le mot de passe chiffré","Un post-it porte ce texte en base64 : TmVwdHVuUXVlc3Q=. Quel est le mot de passe en clair ?","",["neptunquest"],"Décode le base64 : atob() dans la console du navigateur, ou un décodeur en ligne."],["4 · La configuration réseau","Une ligne de cette configuration empêche la baie de joindre Internet. Quel est son numéro ?","1  Adresse IP : 192.168.10.25\n2  Masque : 255.255.255.0\n3  Passerelle : 192.168.11.1\n4  DNS : 192.168.10.5\n5  Serveur DHCP : 192.168.10.5\n6  Suffixe DNS : entreprise.local",["3"],"La passerelle doit être dans le même sous-réseau que l'adresse IP."],["5 · La porte finale","Le code final assemble tes trouvailles : [hôtes utilisables du /26][numéro de la ligne fausse][dernier octet de l'adresse IP de la configuration]. Quel est-il ?","",["62325"],"62, puis 3, puis 25, mis bout à bout."]];
+function escIntro(){var b=$("#g-escape"),best=+lsGet("tm_best_escape")||0;b.innerHTML="<h2>🔐 Escape game : la salle serveur</h2><p class=\"sub\">Tu es enfermé dans la salle serveur. Résous 5 énigmes d'administrateur pour déverrouiller la porte. Chaque mauvais code coûte 15 secondes, chaque indice 60 secondes.</p><p>Meilleur temps : <b>"+(best?escFmt(best):"–")+"</b></p><button class=\"primary\" id=\"ess\">Entrer dans la salle</button>";$("#ess").onclick=escStart}
+function escFmt(t){return Math.floor(t/60)+" min "+("0"+t%60).slice(-2)+" s"}
+function escStart(){es={i:0,t0:Date.now(),pen:0,notes:[]};escShow();es.tm=setInterval(function(){var e=$("#est");if(e)e.textContent=escFmt(escTime())},1000)}
+function escTime(){return Math.floor((Date.now()-es.t0)/1000)+es.pen}
+function escShow(){
+  var q=ESC[es.i],b=$("#g-escape");
+  b.innerHTML="<h2>🔐 Escape game</h2><p class=\"sub\">Énigme "+(es.i+1)+"/"+ESC.length+" · Temps : <b id=\"est\">"+escFmt(escTime())+"</b></p><div class=\"ticket\"><h3 style=\"margin:0 0 6px\" id=\"eqt\"></h3><p id=\"eqq\" style=\"margin:0\"></p><pre id=\"eqb\" class=\"term\" style=\"margin:8px 0 0;white-space:pre-wrap\" hidden></pre></div><p id=\"eno\"></p><div class=\"crow\"><input id=\"eai\" maxlength=\"60\" placeholder=\"Ta réponse\" aria-label=\"Ta réponse\"><button class=\"primary\" id=\"eav\" style=\"margin:0\">Valider</button><button class=\"ghost\" id=\"ehi\">💡 Indice (+60 s)</button></div><p id=\"emg\" role=\"status\"></p>";
+  $("#eqt").textContent=q[0];$("#eqq").textContent=q[1];if(q[2]){$("#eqb").hidden=false;$("#eqb").textContent=q[2]}
+  $("#eno").textContent=es.notes.length?"📒 Carnet : "+es.notes.join(" · "):"";
+  $("#eav").onclick=escCheck;$("#eai").onkeydown=function(e){if(e.key==="Enter")escCheck()};
+  $("#ehi").onclick=function(){es.pen+=60;$("#emg").textContent="💡 "+q[4]+" (+60 s)"};$("#eai").focus();
+}
+function escCheck(){
+  var q=ESC[es.i],v=$("#eai").value.toLowerCase().replace(/\s+/g,"").replace(/^ligne/,"");
+  if(q[3].indexOf(v)<0){es.pen+=15;beep(180,.25,"square");$("#emg").textContent="❌ Code refusé (+15 s).";return}
+  es.notes.push(q[0].split(" · ")[0]+" → "+$("#eai").value.trim());beep(660,.1);es.i++;
+  if(es.i<ESC.length)escShow();else escEnd();
+}
+function escEnd(){
+  clearInterval(es.tm);var t=escTime(),old=+lsGet("tm_best_escape")||0;if(!old||t<old)lsSet("tm_best_escape",String(t));jingle();
+  $("#g-escape").innerHTML="<h2>🔐 Porte déverrouillée !</h2><div class=\"ticket\"><h3 style=\"margin:0\">Évadé en "+escFmt(t)+(old&&t<old?" · Nouveau record !":"")+"</h3><p>Meilleur temps : <b>"+escFmt(Math.min(t,old||t))+"</b></p></div><button class=\"primary\" id=\"esr\">Rejouer</button>";
+  $("#esr").onclick=escStart;
+}
+var day=null;
+function dayW(i){return /haute/i.test(T[i].p)?1.5:1}
+function dayLeft(){return Math.max(0,day.budget-day.used-(fin?0:mins))}
+function dayTick(){$("#dclock").textContent="⏳ Journée : "+dayLeft()+" min restantes";if(!fin&&!day.over&&day.used+mins>=day.budget)dayTimeout()}
+function startDay(){var ids=[];while(ids.length<4){var i=Math.floor(Math.random()*BASE);if(ids.indexOf(i)<0)ids.push(i)}ex=null;day={ids:ids,done:{},sc:{},used:0,budget:40};fin=true;clearInterval(tmr);dayQueue()}
+function dayTimeout(){fin=true;clearInterval(tmr);day.used=day.budget;day.done[cur]=-1;dayQueue()}
+function dayQueue(){
+  var q=$("#dayq");q.hidden=false;$("#end").hidden=true;$("#dskip").hidden=true;
+  var pend=day.ids.filter(function(i){return !day.done[i]});
+  if(day.used>=day.budget||!pend.length){dayEnd();return}
+  var sc=0;day.ids.forEach(function(i){if(day.done[i]>0)sc+=day.sc[i]});
+  q.innerHTML='<h3 style="margin:0 0 6px">📋 Journée de support</h3><p>Il te reste <b>'+(day.budget-day.used)+' min</b> · Score : <b>'+sc+'</b></p><p class="sub">Choisis l\'ordre de traitement : les priorités hautes comptent ×1,5. Un ticket abandonné ou non terminé ne rapporte rien.</p><div class="grid" id="dql"></div>';
+  pend.forEach(function(i){var t=T[i],b=document.createElement("button");b.className="act";b.innerHTML="<div><b>"+t.n+"</b><br><small>"+t.p+" · "+LV[t.l]+" · "+C[CAT[i]]+"</small></div><span>Ouvrir</span>";b.onclick=function(){start(i,4);window.scrollTo({top:0,behavior:"smooth"})};$("#dql").appendChild(b)});
+}
+function dayEnd(){
+  var q=$("#dayq"),tot=0,ok=0;day.over=true;
+  day.ids.forEach(function(i){if(day.done[i]>0){tot+=day.sc[i];ok++}});
+  var k="tm_best_day",old=+lsGet(k)||0;if(tot>old)lsSet(k,tot);jingle();
+  q.hidden=false;$("#dskip").hidden=true;$("#dclock").textContent="";
+  q.innerHTML='<h3 style="margin:0 0 6px">📋 Bilan de la journée</h3><p style="font-size:1.3rem"><b>'+tot+' pts</b> · '+ok+'/'+day.ids.length+' tickets résolus'+(tot>old&&old?' · Nouveau record !':'')+'</p><ol>'+day.ids.map(function(i){return '<li>'+T[i].n+' ('+T[i].p+') : '+(day.done[i]>0?day.sc[i]+' pts':day.done[i]<0?'non résolu':'non traité')+'</li>'}).join('')+'</ol><p>Meilleur : <b>'+Math.max(tot,old)+'</b></p><button class="primary" id="dnew2">Nouvelle journée</button>';
+  $("#dnew2").onclick=startDay;
+}
+var LIVE_DELAY=6000;
+function dueNewLive(){
+  var m=$("#dmsg");m.textContent="";
+  if(!db||!prof){m.textContent="Inscris-toi d'abord au classement.";return}
+  if(cur>=BASE){m.textContent="Les duels se jouent sur les tickets de la liste, pas sur les tickets générés.";return}
+  var ref=db.collection("duels").doc(),t=cur;
+  ref.set({t:t,a:uid,ap:prof.pseudo,as:null,b:null,bp:null,bs:null,ts:Date.now(),live:true,go:null}).then(function(){liveWait(ref.id,t)}).catch(function(){m.textContent="Création du duel refusée."});
+}
+function liveWait(id,t){
+  var b=$("#livb"),fired=false,un;b.hidden=false;b.textContent="⚡ Duel en direct créé sur « "+T[t].n+" ». En attente d'un adversaire…";
+  un=db.collection("duels").doc(id).onSnapshot(function(sn){if(fired||!sn.exists)return;var x=sn.data();if(x.bp&&x.go){fired=true;if(typeof un==="function")un();liveGo(id,"a",t,x.go)}},function(){});
+}
+function liveGo(id,r,t,go){
+  var b=$("#livb");b.hidden=false;
+  var iv=setInterval(function(){
+    var sec=Math.ceil((go-Date.now())/1000);
+    if(sec>0){b.textContent="⚡ Duel en direct : début dans "+sec+" s…";beep(440,.08)}
+    else{clearInterval(iv);b.hidden=true;duelPlay(id,r,t);duel.live=true;liveSub()}
+  },200);
+}
+function liveSub(){
+  var id=duel.id,r=duel.r;
+  duel.unsub=db.collection("duels").doc(id).onSnapshot(function(sn){
+    if(!sn.exists)return;var x=sn.data(),opp=r==="a"?x.bg:x.ag,on=r==="a"?x.bp:x.ap,os=r==="a"?x.bs:x.as,my=r==="a"?x.as:x.bs,b=$("#livb");
+    b.hidden=false;
+    b.textContent="⚔️ "+(on||"Adversaire")+" : "+(os!=null?"a terminé ("+os+" pts)":opp?opp.m+" min · "+opp.n+" action"+(opp.n>1?"s":""):"se prépare")+(my!=null&&os!=null?" · "+(my>os?"🏆 Tu gagnes ("+my+" – "+os+")":my<os?"Il gagne ("+os+" – "+my+")":"Égalité"):"");
+  },function(){});
+}
+function livePush(){
+  var n=Date.now();if(duel.lp&&n-duel.lp<1500)return;duel.lp=n;
+  var o={m:mins,n:path.length,e:errs};
+  db.collection("duels").doc(duel.id).update(duel.r==="a"?{ag:o}:{bg:o}).catch(function(){});
+}
+function clock(){$("#cd").textContent=Math.floor(left/60)+":"+("0"+left%60).slice(-2)}
+function lose(){beep(150,.5,"sawtooth");
+  fin=true;clearInterval(tmr);var t=T[cur],e=$("#end");
+  e.hidden=false;$("#dgp").hidden=true;$("#dg").hidden=true;e.style.borderColor="var(--ko)";e.style.background="var(--kobg)";
+  e.innerHTML='<h2 style="color:var(--ko)">Temps écoulé</h2><p><b>Cause :</b> '+t.x+'</p><p><b>Résolution :</b> '+t.f+'</p><div class="row"><button class="ghost" id="again">Réessayer</button></div>';
+  $("#again").onclick=function(){start(cur)};
+}
+function dayIdx(){var d=new Date().toISOString().slice(0,10),h=0;for(var i=0;i<d.length;i++)h=(h*31+d.charCodeAt(i))%BASE;return h}
+function cleanT(g,lv){
+  var ok=function(v){return v===1||v===true||v==="1"};
+  if(!g||!Array.isArray(g.a)||g.a.length<5||!Array.isArray(g.d)||g.d.length<3)throw 0;
+  var cc={};if(g.c&&typeof g.c==='object')Object.keys(g.c).forEach(function(k){var i=+g.c[k];if(Number.isInteger(i)&&i>=0&&i<g.a.length)cc[normK(String(k))]=i});
+  var r={c:cc,n:esc(g.n),u:esc(g.u),p:/haute/i.test(g.p)?"Priorité haute":"Priorité moyenne",msg:esc(g.msg),x:esc(g.x),f:esc(g.f),l:lv,
+    a:g.a.map(function(x){return [esc(x[0]),Math.max(1,Math.min(15,+x[1]||2)),esc(x[2])]}),
+    d:g.d.map(function(x){return [esc(x[0]),ok(x[1])?1:0,esc(x[2]||"")]})};
+  var gc=r.d.filter(function(x){return x[1]}).length;if(gc<1||gc>2||!r.msg||!r.x)throw 0;
+  return r;
+}
+async function gen(){
+  var b=$("#gen"),m=$("#gmsg");m.textContent="";
+  var sm=window.claude?await claude.use("sample"):null;
+  if(!sm){m.textContent="Génération indisponible ici.";return}
+  var ct=C[+$("#gc").value],lv=+$("#gl").value;b.disabled=true;b.textContent="Claude prépare le ticket…";
+  var q="Tu es formateur en support informatique. Invente UN ticket de support réaliste, en français, catégorie « "+ct+" », niveau "+LV[lv]+". Réponds uniquement par un objet JSON de la forme {\"n\":titre court,\"u\":\"Prénom N. · Service\",\"p\":\"Priorité haute\" ou \"Priorité moyenne\",\"msg\":message de l'utilisateur (il peut se tromper ou approximer),\"a\":[[action d'investigation,minutes (entier 1 à 10),résultat concret avec sorties de commandes]],\"d\":[[diagnostic,1 si c'est le bon sinon 0,pourquoi c'est faux (vide si bon)]],\"c\":{\"commande Windows exacte en minuscules\":index (à partir de 0) de l'action correspondante},\"x\":explication de la cause,\"f\":résolution}. Fournis "+(6+lv)+" actions dont 2 ou 3 inutiles, et 4 diagnostics dont "+(lv==2?"un ou deux bons (deux en cas de cascade de pannes)":"un seul bon")+". Débutant : cause évidente. Confirmé : un indice trompeur. Expert : cause racine subtile, plusieurs symptômes liés, indices trompeurs.";
+  try{var g=cleanT(await sm.json(q,{cache:false}),lv);T[BASE]=g;start(BASE)}
+  catch(e){m.textContent=e&&e.code==="not_granted"?"Autorisation refusée.":e&&e.code==="rate_limited"?"Trop de demandes, réessaie dans un instant.":"Ticket invalide, réessaie."}
+  b.disabled=false;b.textContent="✨ Ticket généré par Claude";
+}
+function esc(v){var d=document.createElement("div");d.textContent=String(v);return d.innerHTML}
+function pts(b){var t=0;for(var k in b)t+=(+b[k]||0);return t}
+function localBest(){var b={};T.forEach(function(t,i){var v=+lsGet("tm_best_"+i);if(v)b[i]=v});return b}
+var ACH=[["first","Premier ticket","Résoudre un ticket"],["clean","Sans faute","Aucune erreur ni indice"],["fast","Éclair","Résolu en 5 min ou moins"],["urgent","Sous pression","Réussir en mode urgence"],["daily","Assidu","Terminer un défi du jour"],["expert","Expert","Résoudre un ticket Expert"],["casc","Cascade","Résoudre une panne en cascade"],["cat","Spécialiste","Tout résoudre dans une catégorie"],["ten","Marathon","Résoudre 10 tickets"],["all4","Touche-à-tout","Un ticket dans 4 catégories différentes"],["chat","Bon contact","Interroger l'utilisateur"],["cmd","Ligne de commande","Résoudre en tapant une commande"],["pen","Plume","Réponse notée 8/10 ou plus"],["dip","Diplômé","Réussir un examen (12/20)"],["car","Carrière","Terminer le parcours carrière"]];
+function achGet(){try{return JSON.parse(lsGet("tm_ach")||"[]")}catch(e){return[]}}
+function checkAch(){
+  var t=T[cur],a=achGet(),n=a.slice(),add=function(k){if(n.indexOf(k)<0)n.push(k)};
+  add("first");if(!errs&&!hints)add("clean");if(mins<=5)add("fast");if(urg)add("urgent");if(daily)add("daily");
+  if((t.l||0)===2)add("expert");if(t.d.filter(function(x){return x[1]}).length>1)add("casc");
+  C.forEach(function(_,k){var ok=true,any=false;CAT.forEach(function(c,i){if(c===k){any=true;if(!+lsGet("tm_best_"+i))ok=false}});if(any&&ok)add("cat")});
+  var sv=[];T.forEach(function(t,i){if(i<BASE&&+lsGet("tm_best_"+i))sv.push(i)});
+  if(sv.length>=10)add("ten");var cs={};sv.forEach(function(i){cs[CAT[i]]=1});if(Object.keys(cs).length>=4)add("all4");
+  if(chatN>0)add("chat");if(usedCmd)add("cmd");if(carCnt(0)>=5&&carCnt(1)>=5&&carCnt(2)>=5)add("car");
+  lsSet("tm_ach",JSON.stringify(n));
+  return n.filter(function(k){return a.indexOf(k)<0});
+}
+function renderAch(){var a=achGet(),o=$("#ach");o.innerHTML="";ACH.forEach(function(x){var d=document.createElement("div");d.className="chip"+(a.indexOf(x[0])>=0?" on":"");d.innerHTML="<b>"+x[1]+"</b><small>"+x[2]+"</small>";o.appendChild(d)});renderProf()}
+function save(pseudo,best,team){
+  return db.collection("scores").doc(uid).set({uid:uid,pseudo:pseudo,best:best,total:pts(best),count:Object.keys(best).length,ach:achGet().length,team:team===undefined?(prof&&prof.team||""):team,wk:weekKey(),wp:weekPts(),wn:weekN()});
+}
+function sync(more){
+  if(!db||!prof)return;
+  var b=Object.assign({},prof.best||{}),s=score();
+  if(s>(+b[cur]||0))b[cur]=s;else if(!more)return;
+  save(prof.pseudo,b).catch(function(){});
+}
+function statsAdd(){var st={};try{st=JSON.parse(lsGet("tm_stats")||"{}")}catch(e){}st.n=(st.n||0)+1;st.m=(st.m||0)+mins;st.e=(st.e||0)+errs;lsSet("tm_stats",JSON.stringify(st))}
+function renderProf(){
+  var b=0,pt=0,cs=C.map(function(){return 0}),ct=C.map(function(){return 0});
+  T.forEach(function(t,i){if(i>=BASE)return;ct[CAT[i]]++;var v=+lsGet("tm_best_"+i);if(v){b++;pt+=v;cs[CAT[i]]++}});
+  var st={};try{st=JSON.parse(lsGet("tm_stats")||"{}")}catch(e){}
+  var nx=[300,1000,2000].filter(function(x){return x>pt})[0],w=0,wr=2;
+  cs.forEach(function(v,k){var r=v/ct[k];if(r<wr){wr=r;w=k}});wkc=w;
+  $("#prof").innerHTML="<p><b>"+b+"/"+BASE+"</b> tickets résolus · <b>"+pt+"</b> pts · grade <b>"+grade(pt)+"</b>"+(nx?" (prochain palier dans "+(nx-pt)+" pts)":" (palier maximum)")+"</p><p>Temps moyen : <b>"+(st.n?(st.m/st.n).toFixed(1)+" min":"–")+"</b> · Erreurs moyennes : <b>"+(st.n?(st.e/st.n).toFixed(1):"–")+"</b> par ticket</p><p>À travailler : <b>"+C[w]+"</b> ("+cs[w]+"/"+ct[w]+" résolus)</p><p>"+streakTxt()+"</p>"+weekHtml()+carHtml()+'<p><button class="ghost" id="adv">▶ Ticket conseillé</button> <button class="ghost" id="rev">🔁 Révision</button> <button class="ghost" id="memo">📋 Fiche mémo</button></p><textarea id="memot" readonly hidden rows="8" style="width:100%;font:inherit" aria-label="Fiche mémo"></textarea>';$("#adv").onclick=advise;$("#rev").onclick=revise;$("#memo").onclick=memo;if($("#car"))$("#car").onclick=carGo;
+}
+var LR=[];
+function board(snap){LR=snap.docs.map(function(d){return d.data()});draw();honor();goal()}
+function draw(){
+  var sel=$("#bc").value||"g",o=$("#board"),pd=$("#podium"),rows=[];o.innerHTML="";pd.innerHTML="";
+  if(sel==="t"){
+    var g={};LR.forEach(function(r){if(!r.team)return;var x=g[r.team]||(g[r.team]={pseudo:r.team,total:0,count:0,uid:null});x.total+=capT(r).t;x.count++});
+    rows=Object.keys(g).map(function(k){return g[k]});
+  }else LR.forEach(function(r){
+    if(sel==="w"){if(r.wk===weekKey()&&+r.wp)rows.push({pseudo:r.pseudo,total:Math.min(+r.wp,200*BASE),count:+r.wn||0,uid:r.uid});return}
+    if(sel==="g"){var c=capT(r);rows.push({pseudo:r.pseudo,total:c.t,count:c.n,uid:r.uid});return}
+    var t=0,n=0,b=r.best||{};for(var k in b){if(+k<BASE&&CAT[+k]===+sel){t+=Math.min(+b[k]||0,200);n++}}
+    if(n)rows.push({pseudo:r.pseudo,total:t,count:n,uid:r.uid});
+  });
+  rows.sort(function(a,b){return b.total-a.total});rows=rows.slice(0,20);
+  if(!rows.length){o.innerHTML='<li class="empty" style="display:block">Personne dans ce classement pour le moment.</li>';return}
+  var unit=sel==="t"?" joueurs":" tickets",med=["🥇","🥈","🥉"];
+  [1,0,2].forEach(function(i){
+    var r=rows[i];if(!r)return;
+    var d=document.createElement("div");d.className="pod p"+(i+1)+(r.uid&&r.uid===uid?" me":"");
+    d.innerHTML='<div class="md">'+med[i]+'</div><b>'+esc(r.pseudo)+'</b><small>'+(sel==="g"?grade(r.total):r.count+unit)+'</small><b>'+r.total+' pts</b>';
+    pd.appendChild(d);
+  });
+  rows.slice(3).forEach(function(r,j){
+    var li=document.createElement("li");if(r.uid&&r.uid===uid)li.className="me";
+    li.innerHTML='<span class="rk">'+(j+4)+'</span><span>'+esc(r.pseudo)+'<span class="gr">'+(sel==="g"?grade(r.total):"")+'</span></span><span class="tk">'+r.count+unit+'</span><b>'+r.total+' pts</b>';
+    o.appendChild(li);
+  });
+}
+function meUi(msg){
+  var m=$("#me");m.innerHTML="";
+  if(prof){
+    m.innerHTML="Connecté : <b>"+esc(prof.pseudo)+"</b> · "+grade(+prof.total||0)+" · "+(+prof.total||0)+" pts · Équipe : ";
+    var ti=document.createElement("input");ti.maxLength=20;ti.value=prof.team||"";ti.setAttribute("aria-label","Équipe ou service");
+    var tb=document.createElement("button");tb.className="ghost";tb.textContent="OK";
+    tb.onclick=function(){save(prof.pseudo,prof.best||{},ti.value.trim().slice(0,20)).catch(function(){})};
+    m.append(ti,tb);return;
+  }
+  m.innerHTML='<input id="pn" maxlength="20" placeholder="Choisis un pseudo" aria-label="Pseudo"><input id="tn" maxlength="20" placeholder="Équipe ou service (facultatif)" aria-label="Équipe"><button class="primary" id="reg">S\u2019inscrire au classement</button>'+(msg?'<span style="color:var(--ko)">'+esc(msg)+'</span>':"");
+  $("#reg").onclick=function(){
+    var v=$("#pn").value.trim();
+    if(v.length<2){meUi("Le pseudo doit faire au moins 2 caractères.");return}
+    save(v,localBest(),$("#tn").value.trim().slice(0,20)).catch(function(){meUi("Inscription refusée : il faut un accès Contributeur sur cette page.")});
+  };
+}
+var duel=null;
+function dueNew(){
+  var m=$("#dmsg");m.textContent="";
+  if(!db||!prof){m.textContent="Inscris-toi d'abord au classement.";return}
+  if(cur>=BASE){m.textContent="Les duels se jouent sur les tickets de la liste, pas sur les tickets générés.";return}
+  var ref=db.collection("duels").doc();
+  ref.set({t:cur,a:uid,ap:prof.pseudo,as:null,b:null,bp:null,bs:null,ts:Date.now()}).then(function(){duelPlay(ref.id,"a",cur)}).catch(function(){m.textContent="Création du duel refusée."});
+}
+function duelPlay(id,r,t){duel={id:id,r:r};start(t,2);window.scrollTo({top:0,behavior:"smooth"})}
+function duelDone(s){db.collection("duels").doc(duel.id).update(duel.r==="a"?{as:s}:{bs:s}).catch(function(){})}
+function duelsUi(snap){
+  var o=$("#duels");o.innerHTML="";
+  var rows=snap.docs.map(function(d){var x=d.data();x.id=d.id;return x}).filter(function(x){return x.t<BASE&&T[x.t]}).sort(function(a,b){return b.ts-a.ts}).slice(0,12);
+  if(!rows.length){o.innerHTML='<li class="empty" style="display:block">Aucun duel pour le moment.</li>';return}
+  rows.forEach(function(r){
+    var li=document.createElement("li"),done=r.as!=null&&r.bs!=null,st,btn=null;
+    if(done)st=r.as===r.bs?"Égalité "+r.as+" – "+r.bs:"Gagnant : "+esc(r.as>r.bs?r.ap:r.bp)+" ("+Math.max(r.as,r.bs)+" – "+Math.min(r.as,r.bs)+")";
+    else if(!r.bp&&r.live)st="⚡ Duel en direct : en attente d'un adversaire";
+    else if(!r.bp)st=r.as==null?"Le créateur est en train de jouer":"En attente d'un adversaire ("+r.as+" pts à battre)";
+    else st="Adversaire en jeu ("+(r.as==null?"?":r.as)+" pts à battre)";
+    li.innerHTML='<span><b>'+esc(r.ap)+'</b> vs <b>'+(r.bp?esc(r.bp):"?")+'</b><br><span class="tk">'+T[r.t].n+'</span></span><span>'+st+'</span>';
+    if(!done&&r.a===uid&&r.as==null)btn=["Jouer mon tour","a"];
+    else if(!done&&r.live&&!r.bp&&r.a!==uid)btn=["Rejoindre en direct","j"];
+    else if(!done&&r.as!=null&&!r.bp&&r.a!==uid)btn=["Relever le défi","b"];
+    else if(!done&&r.b===uid&&r.bs==null)btn=["Jouer mon tour","b"];
+    if(btn){
+      var b=document.createElement("button");b.className="ghost";b.textContent=btn[0];
+      b.onclick=function(){
+        if(btn[1]==="b"&&!r.b){
+          if(!prof){$("#dmsg").textContent="Inscris-toi d'abord au classement.";return}
+          db.collection("duels").doc(r.id).update({b:uid,bp:prof.pseudo}).then(function(){duelPlay(r.id,"b",r.t)}).catch(function(){});
+        }else if(btn[1]==="j"){
+          if(!prof){$("#dmsg").textContent="Inscris-toi d'abord au classement.";return}
+          var go=Date.now()+LIVE_DELAY;db.collection("duels").doc(r.id).update({b:uid,bp:prof.pseudo,go:go}).then(function(){liveGo(r.id,"b",r.t,go)}).catch(function(){});
+        }else duelPlay(r.id,btn[1],r.t);
+      };
+      li.appendChild(b);
+    }
+    o.appendChild(li);
+  });
+}
+async function initLb(){
+  var off="Classement indisponible ici : ouvre la page depuis ton compte claude.ai pour t\u2019inscrire.";
+  try{
+    if(!window.claude){$("#me").textContent=off;return}
+    var u=await claude.use("user"),d=await claude.use("db");
+    uid=u?await u.id():null;
+    if(!d||!uid){$("#me").textContent=off;return}
+    db=d;meUi();$("#duelsec").hidden=false;$("#adm").hidden=false;try{db.collection("tickets").onSnapshot(xLoad,function(){})}catch(e){}$("#prop").hidden=false;try{db.collection("proposals").onSnapshot(pLoad,function(){})}catch(e){}db.collection("duels").onSnapshot(duelsUi,function(){});
+    db.collection("scores").onSnapshot(board,function(){$("#me").textContent=off});
+    db.collection("scores").doc(uid).onSnapshot(function(sn){prof=sn.exists?sn.data():null;meUi();goal()},function(){});
+  }catch(e){$("#me").textContent=off}
+}
+C.forEach(function(n,k){$("#gc").add(new Option(n,k))});LV.forEach(function(n,k){$("#gl").add(new Option(n,k))});
+$("#cs").onclick=ask;$("#ci").onkeydown=function(e){if(e.key==="Enter")ask()};
+var bc=$("#bc");[["g","Classement général"],["w","Classement de la semaine"]].concat(C.map(function(n,k){return [k,"Catégorie : "+n]})).concat([["t","Classement par équipe"]]).forEach(function(o){bc.add(new Option(o[1],o[0]))});bc.onchange=draw;renderAch();$("#dnew").onclick=dueNew;$("#dlive").onclick=dueNewLive;
+var CH=[],hi=0,CW=["ipconfig","ping","nslookup","arp","net","whoami","tracert","netstat","gpresult","gpupdate","hostname","certutil","fsutil","w32tm","nltest","repadmin","outlook","cls","aide"];
+$("#tin").onkeydown=function(e){
+  var i=this;
+  if(e.key==="Enter"){var v=i.value.trim();if(v){CH.push(v);hi=CH.length}runCmd(i.value);i.value=""}
+  else if(e.key==="ArrowUp"){if(hi>0){hi--;i.value=CH[hi];e.preventDefault()}}
+  else if(e.key==="ArrowDown"){if(hi<CH.length){hi++;i.value=CH[hi]||"";e.preventDefault()}}
+  else if(e.key==="Tab"&&i.value&&i.value.indexOf(" ")<0){var m=CW.filter(function(c){return c.indexOf(i.value.toLowerCase())===0});if(m.length===1){i.value=m[0]+" ";e.preventDefault()}}
+};
+$("#snd").onclick=function(){snd=!snd;lsSet("tm_snd",snd?"1":"0");sndUi();beep(660,.1)};sndUi();
+$("#day").onclick=startDay;$("#dskip").onclick=function(){if(!day||fin)return;day.used+=mins;day.done[cur]=-1;fin=true;clearInterval(tmr);dayQueue()};
+$("#exam").onclick=startExam;
+[].forEach.call(document.querySelectorAll("#hub .tab"),function(b){b.onclick=function(){game(b.dataset.g)}});
+$("#admb").onclick=admImport;
+toolsUi();propUi();
+$("#rs").onclick=sendRep;$("#rules").onclick=function(){tuto(true)};$("#tok").onclick=function(){lsSet("tm_tuto","1");tuto(false)};
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("#tuto").hidden)$("#tok").click()});
+if(!lsGet("tm_tuto"))tuto(true);
+$("#daily").onclick=function(){start(dayIdx(),1)};$("#gen").onclick=gen;
+function nos(){$("#genbox").hidden=true;$("#chatbox").hidden=true}
+try{claude.use("sample").then(function(x){if(!x)nos();else{sampleOk=true;$("#tools").hidden=false}}).catch(nos)}catch(e){nos()}
+start(0);
+initLb();
+</script>
+</body>
+</html>
